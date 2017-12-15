@@ -1,0 +1,118 @@
+﻿<Page
+    x:Class="RoutesOverBingMapsApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:RoutesOverBingMapsApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Thickness x:Key="TextBlockLeftInCmdBarMargin">12,14,0,0</Thickness>
+        <SolidColorBrush x:Key="BgBrushTransparentBlack" Color="Black" Opacity="0.70"/>
+    </Page.Resources>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup>
+                <VisualState x:Name="wideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="641"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="clearWaypointsButton.Label" Value="Clear all"/>
+                        <Setter Target="removeWaypointButton.Label" Value="Remove waypoint"/>
+                        <Setter Target="addWaypointButton.Label" Value="Add waypoint"/>
+                        <Setter Target="findRouteButton.Label" Value="Find route"/>
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="narrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="clearWaypointsButton.Label" Value="Clear"/>
+                        <Setter Target="removeWaypointButton.Label" Value="Remove"/>
+                        <Setter Target="addWaypointButton.Label" Value="Add"/>
+                        <Setter Target="findRouteButton.Label" Value="Route"/>
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <maps:MapControl Name="mapControl"
+                         ZoomInteractionMode="GestureAndControl"
+                         TiltInteractionMode="GestureAndControl"
+                         TransitFeaturesVisible="True"/>
+
+        <SymbolIcon Name="crosshairSymbol"
+                    Symbol="Add"
+                    Width="32"
+                    Height="32"
+                    Foreground="{StaticResource BgBrushTransparentBlack}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+        
+        <Canvas>
+            <ProgressRing Name="waitingRing" Visibility="Collapsed"></ProgressRing>
+
+            <Grid Canvas.Left="16" Canvas.Top="16">
+
+                <StackPanel Orientation="Vertical">
+                    <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
+                        <CommandBar.Content>
+                            <TextBlock Name="transportTextBlock"
+                                       Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
+                        </CommandBar.Content>
+                        <AppBarToggleButton Name="useCarButton" Checked="OnCheckUseCarButton">
+                            <FontIcon Glyph="&#xE804;" FontSize="20"/>
+                        </AppBarToggleButton>
+                        <AppBarToggleButton Name="useTransitButton" Checked="OnCheckUseTransitButton">
+                            <FontIcon Glyph="&#xE806;" FontSize="20"/>
+                        </AppBarToggleButton>
+                        <AppBarToggleButton Name="useWalkingButton" Checked="OnCheckUseWalkingButton">
+                            <FontIcon Glyph="&#xE805;" FontSize="20"/>
+                        </AppBarToggleButton>
+                    </CommandBar>
+                    
+                    <ListView Name="listOfWaypoints"
+                              ItemsSource="{x:Bind ViewModel.Waypoints}"
+                              SelectionChanged="OnSelectWaypoint">
+                        <TransitionCollection/>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:Waypoint">
+                                <StackPanel Orientation="Horizontal">
+                                    <local:MyWaypointControl ViewModel="{x:Bind Self}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <CommandBar DefaultLabelPosition="Right" Opacity="0.80">
+
+                        <AppBarButton Name="clearWaypointsButton"
+                                      Icon="Clear"
+                                      Click="OnClickClearButton"
+                                      IsEnabled="False"/>
+                        
+                        <AppBarButton Name="removeWaypointButton"
+                                      Icon="Remove"
+                                      Click="OnClickRemoveButton"
+                                      IsEnabled="False"/>
+                        
+                        <AppBarButton Name="addWaypointButton"
+                                      Icon="Add"
+                                      Click="OnClickAddWaypointButton"/>
+                        
+                        <AppBarButton Name="findRouteButton"
+                                      Icon="Play"
+                                      Click="OnClickFindRouteButton"
+                                      IsEnabled="False"/>
+                    </CommandBar>
+                </StackPanel>
+            </Grid>
+        </Canvas>
+    </Grid>
+</Page>
