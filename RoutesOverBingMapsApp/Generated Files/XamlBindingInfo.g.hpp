@@ -299,6 +299,14 @@ namespace XamlBindingInfo
             }
             obj->SelectedValue = value;
         }
+        static void Set_Windows_UI_Xaml_Controls_AutoSuggestBox_Text(::Windows::UI::Xaml::Controls::AutoSuggestBox^ obj, ::Platform::String^ value, ::Platform::String^ targetNullValue)
+        {
+            if (value == nullptr && targetNullValue != nullptr)
+            {
+                value = targetNullValue;
+            }
+            obj->Text = value;
+        }
         static void Set_Windows_UI_Xaml_Controls_TextBox_Text(::Windows::UI::Xaml::Controls::TextBox^ obj, ::Platform::String^ value, ::Platform::String^ targetNullValue)
         {
             if (value == nullptr && targetNullValue != nullptr)

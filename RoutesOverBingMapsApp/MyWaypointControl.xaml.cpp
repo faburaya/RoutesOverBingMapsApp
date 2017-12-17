@@ -49,8 +49,8 @@ MyWaypointControl::MyWaypointControl()
 
 
 /// <summary>
-/// Should be called whenever input is changed in any of the
-/// text boxes for waypoint data (address & coordinates).
+/// Should be called whenever input is changed
+/// in the text boxes for waypoint coordinates.
 /// </summary>
 void MyWaypointControl::OnTextChangedInput()
 {
@@ -60,8 +60,8 @@ void MyWaypointControl::OnTextChangedInput()
 
     static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
     
-    // reset the appearance of the control:
-    addressTextBox->Background = defBgBrush;
+    // reset the appearance of the boxes:
+    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 }
@@ -92,9 +92,9 @@ void MyWaypointControl::OnDataContextChanged(FrameworkElement ^sender, DataConte
     wayptInputTypeComboBox->SelectedIndex = 0;
     wayptInputTypeComboBox->IsEnabled = true;
 
-    static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
+    auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
 
-    addressTextBox->Background = defBgBrush;
+    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 }
@@ -113,13 +113,15 @@ void MyWaypointControl::OnSelChangedInputOptCBox(Platform::Object ^sender, Route
     switch (OptionOfInput)
     {
     case WaypointInputOption::Address:
-        addressTextBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
+        locateButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+        addressASBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
         latitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
         longitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
         break;
 
     case WaypointInputOption::Coordinates:
-        addressTextBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+        locateButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+        addressASBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
         latitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
         longitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
         latitudeTextBox->IsReadOnly = false;
@@ -127,7 +129,8 @@ void MyWaypointControl::OnSelChangedInputOptCBox(Platform::Object ^sender, Route
         break;
 
     case WaypointInputOption::Pointer:
-        addressTextBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+        locateButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+        addressASBox->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
         latitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
         longitudeTextBox->Visibility = Windows::UI::Xaml::Visibility::Visible;
         latitudeTextBox->IsReadOnly = true;
@@ -141,12 +144,101 @@ void MyWaypointControl::OnSelChangedInputOptCBox(Platform::Object ^sender, Route
 
 
 /// <summary>
-/// Called when the locate button is clicked in one of the waypoints.
+/// Called text changes in address box.
 /// </summary>
 /// <remarks>
-/// This must perform geocoding of address to a set of coordinates,
-/// or reverse geocoding of a set of coordinates to an address. In
-/// both cases the geographic location must be set in the map.
+/// This must perform geocoding to produce a set of most likely
+/// geographic coordinates for the provided address.
+/// </remarks>
+/// <param name="sender">The sender (auto-suggest box).</param>
+/// <param name="evArgs">The event arguments.</param>
+void MyWaypointControl::OnTextChangedAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxTextChangedEventArgs ^evArgs)
+{
+    if (evArgs->Reason != Controls::AutoSuggestionBoxTextChangeReason::UserInput)
+        return;
+
+    static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
+    
+    // reset the appearance of the boxes:
+    addressASBox->Background = defBgBrush;
+    latitudeTextBox->Background = defBgBrush;
+    longitudeTextBox->Background = defBgBrush;
+
+    // perform geocoding:
+    concurrency::create_task(
+        MapLocationFinder::FindLocationsAsync(m_waypoint->GetLocation().address, m_waypoint->GeocodeQueryHint, 5)
+    )
+    .then([this, sender](MapLocationFinderResult ^result)
+    {
+        auto errBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorErrorState"));
+
+        if (result->Status != MapLocationFinderStatus::Success)
+        {
+            addressASBox->Background = errBgBrush;
+            return;
+        }
+
+        auto items = ref new Platform::Collections::Vector<MapLocation ^>();
+
+        for (auto &&item : result->Locations)
+            items->Append(item);
+
+        sender->ItemsSource = items;
+    });
+}
+
+
+/// <summary>
+/// Called upon selection of suggested item in address box.
+/// </summary>
+/// <remarks>
+/// This must updated the displayed address and coordinates
+/// according the suggestion chosed by the user.
+/// </remarks>
+/// <param name="sender">The sender (auto-suggest box).</param>
+/// <param name="evArgs">The event arguments.</param>
+void MyWaypointControl::OnSuggestionChosenAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxSuggestionChosenEventArgs ^evArgs)
+{
+    auto location = safe_cast<MapLocation ^> (evArgs->SelectedItem);
+
+    Address = location->Address->FormattedAddress;
+    Latitude = location->Point->Position.Latitude;
+    Longitude = location->Point->Position.Longitude;
+
+    // waypoint location is now verified
+    m_waypoint->MarkVerified();
+
+    auto okayBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorOkayState"));
+
+    addressASBox->Background = okayBgBrush;
+    latitudeTextBox->Background = okayBgBrush;
+    longitudeTextBox->Background = okayBgBrush;
+}
+
+
+/// <summary>
+/// Called after selection of suggested item in address box.
+/// </summary>
+/// <remarks>
+/// This must show the chosen location in the map.
+/// </remarks>
+/// <param name="sender">The sender (auto-suggest box).</param>
+/// <param name="evArgs">The event arguments.</param>
+void MyWaypointControl::OnQuerySubmittedAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxQuerySubmittedEventArgs ^evArgs)
+{
+    TheMap::GetInstance().DisplayWaypointLocation(
+        m_waypoint->Order,
+        static_cast<MapLocation ^> (evArgs->ChosenSuggestion)->Point->Position
+    );
+}
+
+
+/// <summary>
+/// Called when the locate button is clicked.
+/// </summary>
+/// <remarks>
+/// This must perform reverse geocoding of a set of coordinates to
+/// an address, and such geographic location must be set in the map.
 /// </remarks>
 /// <param name="sender">The sender (locate button).</param>
 /// <param name="evArgs">The event arguments.</param>
@@ -156,143 +248,93 @@ void MyWaypointControl::OnClickLocateButton(Platform::Object ^sender, RoutedEven
     auto okayBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorOkayState"));
     auto errBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorErrorState"));
 
-    addressTextBox->Background = defBgBrush;
+    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 
-    // Use reverse geocoding to validate the coordinates:
-    if (OptionOfInput != WaypointInputOption::Address)
+    _ASSERTE(OptionOfInput != WaypointInputOption::Address);
+
+    // If the input of coordinates came from user, they might be wrong:
+    if (OptionOfInput == WaypointInputOption::Coordinates)
     {
-        // If the input of coordinates came from user, they might be wrong:
-        if (OptionOfInput == WaypointInputOption::Coordinates)
+        bool error(false);
+
+        if (Latitude < -180.0 || Latitude > 180.0)
         {
-            bool error(false);
-
-            if (Latitude < -180.0 || Latitude > 180.0)
-            {
-                latitudeTextBox->Background = errBgBrush;
-                error = true;
-            }
-
-            if (Longitude < -180.0 || Longitude > 180.0)
-            {
-                longitudeTextBox->Background = errBgBrush;
-                error = true;
-            }
-
-            if (error)
-                return;
-
-            // while awaiting for verification, disable these:
-            latitudeTextBox->IsReadOnly = true;
-            longitudeTextBox->IsReadOnly = true;
-        }
-        // otherwise, the coordinates come from the crosshair in the map center:
-        else
-        {
-            double latitude, longitude;
-
-            TheMap::GetInstance().GetCenterPosition(latitude, longitude);
-
-            Latitude = latitude;
-            Longitude = longitude;
+            latitudeTextBox->Background = errBgBrush;
+            error = true;
         }
 
-        BasicGeoposition position;
-        position.Altitude = 0.0;
-        position.Latitude = Latitude;
-        position.Longitude = Longitude;
+        if (Longitude < -180.0 || Longitude > 180.0)
+        {
+            longitudeTextBox->Background = errBgBrush;
+            error = true;
+        }
+
+        if (error)
+            return;
 
         // while awaiting for verification, disable these:
-        locateButton->IsEnabled = false;
-        wayptInputTypeComboBox->IsEnabled = false;
-
-        // Perform reverse geocoding:
-        concurrency::create_task(
-            MapLocationFinder::FindLocationsAtAsync(ref new Geopoint(position))
-        )
-        .then([this, okayBgBrush, errBgBrush](MapLocationFinderResult ^result)
-        {
-            if (OptionOfInput == WaypointInputOption::Coordinates)
-            {
-                latitudeTextBox->IsReadOnly = false;
-                longitudeTextBox->IsReadOnly = false;
-            }
-
-            locateButton->IsEnabled = true;
-            wayptInputTypeComboBox->IsEnabled = true;
-
-            if (result->Status != MapLocationFinderStatus::Success
-                || result->Locations->Size == 0)
-            {
-                latitudeTextBox->Background = errBgBrush;
-                longitudeTextBox->Background = errBgBrush;
-                return;
-            }
-
-            auto firstResult = result->Locations->GetAt(0);
-
-            Address = firstResult->Address->FormattedAddress;
-
-            // waypoint location is now verified
-            m_waypoint->MarkVerified();
-
-            TheMap::GetInstance().DisplayWaypointLocation(
-                m_waypoint->Order,
-                firstResult->Point->Position
-            );
-
-            addressTextBox->Background = okayBgBrush;
-            latitudeTextBox->Background = okayBgBrush;
-            longitudeTextBox->Background = okayBgBrush;
-        });
+        latitudeTextBox->IsReadOnly = true;
+        longitudeTextBox->IsReadOnly = true;
     }
-    else // Use geocoding to validate the ADDRESS:
+    // otherwise, the coordinates come from the crosshair in the map center:
+    else
     {
-        if (m_waypoint->GetLocation().address->IsEmpty())
+        double latitude, longitude;
+
+        TheMap::GetInstance().GetCenterPosition(latitude, longitude);
+
+        Latitude = latitude;
+        Longitude = longitude;
+    }
+
+    BasicGeoposition position;
+    position.Altitude = 0.0;
+    position.Latitude = Latitude;
+    position.Longitude = Longitude;
+
+    // while awaiting for verification, disable these:
+    locateButton->IsEnabled = false;
+    wayptInputTypeComboBox->IsEnabled = false;
+
+    // Perform reverse geocoding:
+    concurrency::create_task(
+        MapLocationFinder::FindLocationsAtAsync(ref new Geopoint(position))
+    )
+    .then([this, okayBgBrush, errBgBrush](MapLocationFinderResult ^result)
+    {
+        if (OptionOfInput == WaypointInputOption::Coordinates)
         {
-            addressTextBox->Background = errBgBrush;
+            latitudeTextBox->IsReadOnly = false;
+            longitudeTextBox->IsReadOnly = false;
+        }
+
+        locateButton->IsEnabled = true;
+        wayptInputTypeComboBox->IsEnabled = true;
+
+        if (result->Status != MapLocationFinderStatus::Success
+            || result->Locations->Size == 0)
+        {
+            latitudeTextBox->Background = errBgBrush;
+            longitudeTextBox->Background = errBgBrush;
             return;
         }
 
-        // while awaiting for verification, disable these:
-        addressTextBox->IsReadOnly = true;
-        locateButton->IsEnabled = false;
-        wayptInputTypeComboBox->IsEnabled = false;
+        auto firstResult = result->Locations->GetAt(0);
 
-        // Perform geocoding:
-        concurrency::create_task(
-            MapLocationFinder::FindLocationsAsync(m_waypoint->GetLocation().address, m_waypoint->GeocodeQueryHint)
-        )
-        .then([this, okayBgBrush, errBgBrush](MapLocationFinderResult ^result)
-        {
-            addressTextBox->IsReadOnly = false;
-            locateButton->IsEnabled = true;
-            wayptInputTypeComboBox->IsEnabled = true;
+        Address = firstResult->Address->FormattedAddress;
 
-            if (result->Status != MapLocationFinderStatus::Success)
-            {
-                addressTextBox->Background = errBgBrush;
-                return;
-            }
+        // waypoint location is now verified
+        m_waypoint->MarkVerified();
 
-            auto firstResult = result->Locations->GetAt(0);
+        TheMap::GetInstance().DisplayWaypointLocation(
+            m_waypoint->Order,
+            firstResult->Point->Position
+        );
 
-            Address = firstResult->Address->FormattedAddress;
-            Latitude = firstResult->Point->Position.Latitude;
-            Longitude = firstResult->Point->Position.Longitude;
-
-            // waypoint location is now verified
-            m_waypoint->MarkVerified();
-
-            TheMap::GetInstance().DisplayWaypointLocation(
-                m_waypoint->Order,
-                firstResult->Point->Position
-            );
-
-            addressTextBox->Background = okayBgBrush;
-            latitudeTextBox->Background = okayBgBrush;
-            longitudeTextBox->Background = okayBgBrush;
-        });
-    }
+        addressASBox->Background = okayBgBrush;
+        latitudeTextBox->Background = okayBgBrush;
+        longitudeTextBox->Background = okayBgBrush;
+    });
 }

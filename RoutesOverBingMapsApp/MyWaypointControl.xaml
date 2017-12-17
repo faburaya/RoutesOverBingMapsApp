@@ -5,6 +5,7 @@
     xmlns:local="using:RoutesOverBingMapsApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:maps="using:Windows.Services.Maps"
     mc:Ignorable="d">
 
     <UserControl.Resources>
@@ -24,7 +25,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="wayptInputTypeComboBox.Width" Value="128"/>
-                        <Setter Target="addressTextBox.Width" Value="260"/>
+                        <Setter Target="addressASBox.Width" Value="304"/>
                         <Setter Target="latitudeTextBox.Width" Value="128"/>
                         <Setter Target="longitudeTextBox.Width" Value="128"/>
                     </VisualState.Setters>
@@ -35,7 +36,7 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="wayptInputTypeComboBox.Width" Value="60"/>
-                        <Setter Target="addressTextBox.Width" Value="124"/>
+                        <Setter Target="addressASBox.Width" Value="168"/>
                         <Setter Target="latitudeTextBox.Width" Value="60"/>
                         <Setter Target="longitudeTextBox.Width" Value="60"/>
                     </VisualState.Setters>
@@ -44,7 +45,7 @@
         </VisualStateManager.VisualStateGroups>
 
         <StackPanel Orientation="Horizontal" Height="32">
-            
+
             <SymbolIcon Symbol="Flag"
                         VerticalAlignment="Center"
                         Margin="{StaticResource LeftAlignedMargin}"/>
@@ -64,12 +65,21 @@
                       Margin="{StaticResource LeftAlignedMargin}">
             </ComboBox>
 
-            <TextBox Name="addressTextBox"
-                     PlaceholderText="Address"
-                     Text="{x:Bind Address, Mode=TwoWay}"
-                     BorderBrush="Transparent"
-                     Background="{StaticResource BgColorInitialState}"
-                     Margin="{StaticResource LeftAlignedMargin}"/>
+            <AutoSuggestBox Name="addressASBox"
+                            PlaceholderText="Address"
+                            QueryIcon="Target"
+                            Text="{x:Bind Address, Mode=TwoWay}"
+                            TextChanged="OnTextChangedAddrASBox"
+                            SuggestionChosen="OnSuggestionChosenAddrASBox"
+                            QuerySubmitted="OnQuerySubmittedAddrASBox"
+                            BorderBrush="Transparent"
+                            Background="{StaticResource BgColorInitialState}">
+                <AutoSuggestBox.ItemTemplate>
+                    <DataTemplate x:DataType="maps:MapLocation">
+                        <TextBlock Text="{x:Bind Address.FormattedAddress}"/>
+                    </DataTemplate>
+                </AutoSuggestBox.ItemTemplate>
+            </AutoSuggestBox>
 
             <TextBox Name="latitudeTextBox"
                      PlaceholderText="Latitude"
@@ -89,7 +99,7 @@
                      Background="{StaticResource BgColorInitialState}"
                      Margin="{StaticResource LeftAlignedMargin}"/>
 
-            <Button Name="locateButton" Click="OnClickLocateButton">
+            <Button Name="locateButton" Click="OnClickLocateButton" Visibility="Collapsed">
                 <SymbolIcon Symbol="Target"/>
             </Button>
         </StackPanel>

@@ -20,6 +20,7 @@ namespace Windows {
         namespace Xaml {
             namespace Controls {
                 ref class ComboBox;
+                ref class AutoSuggestBox;
                 ref class TextBox;
                 ref class Button;
             }
@@ -41,13 +42,14 @@ namespace RoutesOverBingMapsApp
     
     private:
         bool _contentLoaded;
+        class MyWaypointControl_obj10_Bindings;
         class MyWaypointControl_obj1_Bindings;
     
         ::XamlBindingInfo::XamlBindings^ Bindings;
         private: ::Windows::UI::Xaml::VisualState^ wideState;
         private: ::Windows::UI::Xaml::VisualState^ narrowState;
         private: ::Windows::UI::Xaml::Controls::ComboBox^ wayptInputTypeComboBox;
-        private: ::Windows::UI::Xaml::Controls::TextBox^ addressTextBox;
+        private: ::Windows::UI::Xaml::Controls::AutoSuggestBox^ addressASBox;
         private: ::Windows::UI::Xaml::Controls::TextBox^ latitudeTextBox;
         private: ::Windows::UI::Xaml::Controls::TextBox^ longitudeTextBox;
         private: ::Windows::UI::Xaml::Controls::Button^ locateButton;

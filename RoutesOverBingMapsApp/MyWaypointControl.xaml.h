@@ -144,7 +144,6 @@ namespace RoutesOverBingMapsApp
             {
                 m_waypoint->GetLocation().address = value;
                 PropertyChanged(this, ref new Data::PropertyChangedEventArgs(Platform::StringReference(L"Address")));
-                OnTextChangedInput();
             }
         }
 
@@ -189,6 +188,12 @@ namespace RoutesOverBingMapsApp
         void OnDataContextChanged(FrameworkElement ^sender, DataContextChangedEventArgs ^evArgs);
 
         void OnSelChangedInputOptCBox(Platform::Object ^sender, RoutedEventArgs ^evArgs);
+
+        void OnTextChangedAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxTextChangedEventArgs ^evArgs);
+
+        void OnSuggestionChosenAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxSuggestionChosenEventArgs ^evArgs);
+
+        void OnQuerySubmittedAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxQuerySubmittedEventArgs ^evArgs);
 
         void OnClickLocateButton(Platform::Object ^sender, RoutedEventArgs ^evArgs);
 	};
