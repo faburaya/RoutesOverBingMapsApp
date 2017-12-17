@@ -67,7 +67,6 @@
 
             <AutoSuggestBox Name="addressASBox"
                             PlaceholderText="Address"
-                            QueryIcon="Target"
                             Text="{x:Bind Address, Mode=TwoWay}"
                             TextChanged="OnTextChangedAddrASBox"
                             SuggestionChosen="OnSuggestionChosenAddrASBox"

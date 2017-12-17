@@ -61,7 +61,6 @@ void MyWaypointControl::OnTextChangedCoordinates()
     static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
     
     // reset the appearance of the boxes:
-    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 }
@@ -154,7 +153,6 @@ void MyWaypointControl::OnTextChangedAddrASBox(Controls::AutoSuggestBox ^sender,
     static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
     
     // reset the appearance of the boxes:
-    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 
@@ -167,10 +165,7 @@ void MyWaypointControl::OnTextChangedAddrASBox(Controls::AutoSuggestBox ^sender,
         auto errBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorErrorState"));
 
         if (result->Status != MapLocationFinderStatus::Success)
-        {
-            addressASBox->Background = errBgBrush;
             return;
-        }
 
         auto items = ref new Platform::Collections::Vector<MapLocation ^>();
 
@@ -204,7 +199,6 @@ void MyWaypointControl::OnSuggestionChosenAddrASBox(Controls::AutoSuggestBox ^se
 
     auto okayBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorOkayState"));
 
-    addressASBox->Background = okayBgBrush;
     latitudeTextBox->Background = okayBgBrush;
     longitudeTextBox->Background = okayBgBrush;
 }
@@ -242,7 +236,6 @@ void MyWaypointControl::OnClickLocateButton(Platform::Object ^sender, RoutedEven
     auto okayBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorOkayState"));
     auto errBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorErrorState"));
 
-    addressASBox->Background = defBgBrush;
     latitudeTextBox->Background = defBgBrush;
     longitudeTextBox->Background = defBgBrush;
 
@@ -327,7 +320,6 @@ void MyWaypointControl::OnClickLocateButton(Platform::Object ^sender, RoutedEven
             firstResult->Point->Position
         );
 
-        addressASBox->Background = okayBgBrush;
         latitudeTextBox->Background = okayBgBrush;
         longitudeTextBox->Background = okayBgBrush;
     });

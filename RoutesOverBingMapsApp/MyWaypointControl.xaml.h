@@ -107,16 +107,7 @@ namespace RoutesOverBingMapsApp
         property WaypointInputOption OptionOfInput
         {
             WaypointInputOption get() { return m_optionOfInput; }
-
-            void set(WaypointInputOption value)
-            {
-                // when same value, do not retrigger binding update to prevent infinite recursion
-                if (m_optionOfInput == value)
-                    return;
-
-                m_optionOfInput = value;
-                PropertyChanged(this, ref new Data::PropertyChangedEventArgs(Platform::StringReference(L"OptionOfInput")));
-            }
+            void set(WaypointInputOption value) { m_optionOfInput = value; }
         }
 
         /// <summary>
