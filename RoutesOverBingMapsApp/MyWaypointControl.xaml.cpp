@@ -52,7 +52,7 @@ MyWaypointControl::MyWaypointControl()
 /// Should be called whenever input is changed
 /// in the text boxes for waypoint coordinates.
 /// </summary>
-void MyWaypointControl::OnTextChangedInput()
+void MyWaypointControl::OnTextChangedCoordinates()
 {
     // current input location has already been verified by geocoding?
     if (m_waypoint->IsVerified)
@@ -91,12 +91,6 @@ void MyWaypointControl::OnDataContextChanged(FrameworkElement ^sender, DataConte
     // make an option selected by default in the combo box
     wayptInputTypeComboBox->SelectedIndex = 0;
     wayptInputTypeComboBox->IsEnabled = true;
-
-    auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
-
-    addressASBox->Background = defBgBrush;
-    latitudeTextBox->Background = defBgBrush;
-    longitudeTextBox->Background = defBgBrush;
 }
 
 
@@ -154,7 +148,7 @@ void MyWaypointControl::OnSelChangedInputOptCBox(Platform::Object ^sender, Route
 /// <param name="evArgs">The event arguments.</param>
 void MyWaypointControl::OnTextChangedAddrASBox(Controls::AutoSuggestBox ^sender, Controls::AutoSuggestBoxTextChangedEventArgs ^evArgs)
 {
-    if (evArgs->Reason != Controls::AutoSuggestionBoxTextChangeReason::UserInput)
+    if (evArgs->Reason != Controls::AutoSuggestionBoxTextChangeReason::UserInput || m_waypoint->IsVerified)
         return;
 
     static auto defBgBrush = (Media::Brush ^)this->Resources->Lookup(ref new Platform::String(L"BgColorInitialState"));
@@ -228,7 +222,7 @@ void MyWaypointControl::OnQuerySubmittedAddrASBox(Controls::AutoSuggestBox ^send
 {
     TheMap::GetInstance().DisplayWaypointLocation(
         m_waypoint->Order,
-        static_cast<MapLocation ^> (evArgs->ChosenSuggestion)->Point->Position
+        m_waypoint->GetLocation().coordinates
     );
 }
 

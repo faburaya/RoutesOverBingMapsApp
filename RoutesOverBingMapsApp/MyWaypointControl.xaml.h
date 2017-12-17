@@ -161,7 +161,7 @@ namespace RoutesOverBingMapsApp
             {
                 m_waypoint->GetLocation().coordinates.Latitude = value;
                 PropertyChanged(this, ref new Data::PropertyChangedEventArgs(Platform::StringReference(L"Latitude")));
-                OnTextChangedInput();
+                OnTextChangedCoordinates();
             }
         }
 
@@ -179,11 +179,11 @@ namespace RoutesOverBingMapsApp
             {
                 m_waypoint->GetLocation().coordinates.Longitude = value;
                 PropertyChanged(this, ref new Data::PropertyChangedEventArgs(Platform::StringReference(L"Longitude")));
-                OnTextChangedInput();
+                OnTextChangedCoordinates();
             }
         }
 
-        void OnTextChangedInput();
+        void OnTextChangedCoordinates();
 
         void OnDataContextChanged(FrameworkElement ^sender, DataContextChangedEventArgs ^evArgs);
 

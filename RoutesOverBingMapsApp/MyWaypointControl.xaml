@@ -71,9 +71,7 @@
                             Text="{x:Bind Address, Mode=TwoWay}"
                             TextChanged="OnTextChangedAddrASBox"
                             SuggestionChosen="OnSuggestionChosenAddrASBox"
-                            QuerySubmitted="OnQuerySubmittedAddrASBox"
-                            BorderBrush="Transparent"
-                            Background="{StaticResource BgColorInitialState}">
+                            QuerySubmitted="OnQuerySubmittedAddrASBox">
                 <AutoSuggestBox.ItemTemplate>
                     <DataTemplate x:DataType="maps:MapLocation">
                         <TextBlock Text="{x:Bind Address.FormattedAddress}"/>
@@ -87,7 +85,6 @@
                      Text="{x:Bind Latitude, Mode=TwoWay, Converter={StaticResource FromString2Double}}"
                      Visibility="Collapsed"
                      BorderBrush="Transparent"
-                     Background="{StaticResource BgColorInitialState}"
                      Margin="{StaticResource LeftAlignedMargin}"/>
 
             <TextBox Name="longitudeTextBox"
@@ -96,7 +93,6 @@
                      Text="{x:Bind Longitude, Mode=TwoWay, Converter={StaticResource FromString2Double}}"
                      Visibility="Collapsed"
                      BorderBrush="Transparent"
-                     Background="{StaticResource BgColorInitialState}"
                      Margin="{StaticResource LeftAlignedMargin}"/>
 
             <Button Name="locateButton" Click="OnClickLocateButton" Visibility="Collapsed">
