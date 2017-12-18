@@ -30,11 +30,11 @@ namespace RoutesOverBingMapsApp
             AppViewModel ^get() { return m_viewModel; }
         }
 
-        void OnCheckUseCarButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+        void OnCheckUseMicrosoftButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
-        void OnCheckUseTransitButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+        void OnCheckUseGoogleButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
-        void OnCheckUseWalkingButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+        void OnCheckUseTomtomButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
         void OnSelectWaypoint(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 

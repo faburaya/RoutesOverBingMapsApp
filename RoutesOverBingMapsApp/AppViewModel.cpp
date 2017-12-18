@@ -36,7 +36,7 @@ Waypoint::Waypoint(int index, Geopoint ^geoCodeQueryHint)
 /// </summary>
 AppViewModel::AppViewModel()
     : m_waypoints(ref new Platform::Collections::Vector<Waypoint ^>())
-    , m_transport(TransportOption::Car)
+    , m_routeService(RouteService::Microsoft)
 {
 }
 

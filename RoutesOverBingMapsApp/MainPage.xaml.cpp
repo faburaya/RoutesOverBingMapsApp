@@ -13,9 +13,6 @@ using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Windows::UI::Xaml::Controls::Primitives;
 using namespace Windows::UI::Xaml::Data;
-using namespace Windows::UI::Xaml::Input;
-using namespace Windows::UI::Xaml::Media;
-using namespace Windows::UI::Xaml::Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -31,53 +28,53 @@ MainPage::MainPage()
     MapService::ServiceToken =
         Platform::StringReference(L"UBu2mHom1aG4EwNAhp6k~Wov5AskUExUDvuaCIrSjng~ApMoRijnwq9SsGFkuRe3T7zKxK9l9OKQtFC-AKU_FSYV0cLYtcJdyMzv-ptVz5lP");
 
-    useCarButton->IsChecked = true;
-    useTransitButton->IsChecked = false;
-    useWalkingButton->IsChecked = false;
+    useMicrosoftButton->IsChecked = true;
+    useGoogleButton->IsChecked = false;
+    useTomtomButton->IsChecked = false;
 
     TheMap::Initialize(mapControl);
 }
 
 
 /// <summary>
-/// Called when the (toggle)button to choose car as transport is checked.
+/// Called when the (toggle)button to choose Bing Maps service is checked.
 /// </summary>
 /// <param name="sender">The sender (control).</param>
 /// <param name="evArgs">The event arguments.</param>
-void MainPage::OnCheckUseCarButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+void MainPage::OnCheckUseMicrosoftButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
-    ViewModel->Transport = TransportOption::Car;
-    transportTextBlock->Text = Platform::StringReference(L"By car");
-    useTransitButton->IsChecked = false;
-    useWalkingButton->IsChecked = false;
+    ViewModel->Service = RouteService::Microsoft;
+    serviceTextBlock->Text = Platform::StringReference(L"Microsoft");
+    useGoogleButton->IsChecked = false;
+    useTomtomButton->IsChecked = false;
 }
 
 
 /// <summary>
-/// Called when the (toggle)button to choose transit as transport is checked.
+/// Called when the (toggle)button to choose Google Maps API is checked.
 /// </summary>
 /// <param name="sender">The sender (control).</param>
 /// <param name="evArgs">The event arguments.</param>
-void MainPage::OnCheckUseTransitButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+void MainPage::OnCheckUseGoogleButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
-    ViewModel->Transport = TransportOption::Transit;
-    transportTextBlock->Text = Platform::StringReference(L"Transit");
-    useCarButton->IsChecked = false;
-    useWalkingButton->IsChecked = false;
+    ViewModel->Service = RouteService::GoogleMaps;
+    serviceTextBlock->Text = Platform::StringReference(L"Google Maps");
+    useMicrosoftButton->IsChecked = false;
+    useTomtomButton->IsChecked = false;
 }
 
 
 /// <summary>
-/// Called when the (toggle)button to choose waling as transport is checked.
+/// Called when the (toggle)button to choose Tomtom API is checked.
 /// </summary>
 /// <param name="sender">The sender (control).</param>
 /// <param name="evArgs">The event arguments.</param>
-void MainPage::OnCheckUseWalkingButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+void MainPage::OnCheckUseTomtomButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
-    ViewModel->Transport = TransportOption::Walking;
-    transportTextBlock->Text = Platform::StringReference(L"Walking");
-    useCarButton->IsChecked = false;
-    useTransitButton->IsChecked = false;
+    ViewModel->Service = RouteService::Tomtom;
+    serviceTextBlock->Text = Platform::StringReference(L"Tomtom");
+    useMicrosoftButton->IsChecked = false;
+    useGoogleButton->IsChecked = false;
 }
 
 

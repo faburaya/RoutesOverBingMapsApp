@@ -19,6 +19,7 @@ namespace Windows {
     namespace UI {
         namespace Xaml {
             namespace Controls {
+                ref class ProgressRing;
                 ref class ComboBox;
                 ref class AutoSuggestBox;
                 ref class TextBox;
@@ -42,12 +43,13 @@ namespace RoutesOverBingMapsApp
     
     private:
         bool _contentLoaded;
-        class MyWaypointControl_obj10_Bindings;
+        class MyWaypointControl_obj11_Bindings;
         class MyWaypointControl_obj1_Bindings;
     
         ::XamlBindingInfo::XamlBindings^ Bindings;
         private: ::Windows::UI::Xaml::VisualState^ wideState;
         private: ::Windows::UI::Xaml::VisualState^ narrowState;
+        private: ::Windows::UI::Xaml::Controls::ProgressRing^ waitingRing;
         private: ::Windows::UI::Xaml::Controls::ComboBox^ wayptInputTypeComboBox;
         private: ::Windows::UI::Xaml::Controls::AutoSuggestBox^ addressASBox;
         private: ::Windows::UI::Xaml::Controls::TextBox^ latitudeTextBox;

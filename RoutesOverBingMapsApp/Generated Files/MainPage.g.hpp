@@ -222,21 +222,21 @@ void ::RoutesOverBingMapsApp::MainPage::Connect(int __connectionId, ::Platform::
         {
             this->useCarButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useCarButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseCarButton);
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseMicrosoftButton);
         }
         break;
     case 16:
         {
             this->useTransitButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useTransitButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseTransitButton);
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseGoogleButton);
         }
         break;
     case 17:
         {
             this->useWalkingButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useWalkingButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseWalkingButton);
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseTomtomButton);
         }
         break;
     }

@@ -69,10 +69,10 @@ namespace RoutesOverBingMapsApp
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ removeWaypointButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ addWaypointButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ findRouteButton;
-        private: ::Windows::UI::Xaml::Controls::TextBlock^ transportTextBlock;
-        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useCarButton;
-        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useTransitButton;
-        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useWalkingButton;
+        private: ::Windows::UI::Xaml::Controls::TextBlock^ serviceTextBlock;
+        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useMicrosoftButton;
+        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useGoogleButton;
+        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useTomtomButton;
     };
 }
 

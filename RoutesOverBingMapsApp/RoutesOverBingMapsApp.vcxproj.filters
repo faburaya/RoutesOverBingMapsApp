@@ -16,9 +16,6 @@
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainPage.xaml.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="GeocodingHelper.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="AppViewModel.cpp">
       <Filter>Common</Filter>
     </ClCompile>
@@ -26,14 +23,12 @@
     <ClCompile Include="TheMap.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="RouteHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainPage.xaml.h" />
-    <ClInclude Include="GeocodingHelper.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="AppViewModel.h">
       <Filter>Common</Filter>
     </ClInclude>
@@ -41,6 +36,7 @@
     <ClInclude Include="TheMap.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="RouteHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -62,6 +58,15 @@
       <Filter>Assets</Filter>
     </Image>
     <Image Include="Assets\Wide310x150Logo.scale-200.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\google_maps_icon.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\microsoft_icon.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\tomtom_icon.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>

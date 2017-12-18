@@ -195,7 +195,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AppViewModel.h" />
-    <ClInclude Include="GeocodingHelper.h" />
+    <ClInclude Include="RouteHelper.h" />
     <ClInclude Include="MyWaypointControl.xaml.h">
       <DependentUpon>MyWaypointControl.xaml</DependentUpon>
     </ClInclude>
@@ -227,12 +227,15 @@
     <None Include="RoutesOverBingMapsApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\google_maps_icon.png" />
     <Image Include="Assets\LockScreenLogo.scale-200.png" />
+    <Image Include="Assets\microsoft_icon.png" />
     <Image Include="Assets\SplashScreen.scale-200.png" />
     <Image Include="Assets\Square150x150Logo.scale-200.png" />
     <Image Include="Assets\Square44x44Logo.scale-200.png" />
     <Image Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Image Include="Assets\StoreLogo.png" />
+    <Image Include="Assets\tomtom_icon.png" />
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
@@ -240,7 +243,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </ClCompile>
     <ClCompile Include="AppViewModel.cpp" />
-    <ClCompile Include="GeocodingHelper.cpp" />
+    <ClCompile Include="RouteHelper.cpp" />
     <ClCompile Include="MainPage.xaml.cpp">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </ClCompile>

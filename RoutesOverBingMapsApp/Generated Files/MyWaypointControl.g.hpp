@@ -30,11 +30,11 @@ void ::RoutesOverBingMapsApp::MyWaypointControl::InitializeComponent()
 /// <summary>
 /// Auto generated class for compiled bindings.
 /// </summary>
-class RoutesOverBingMapsApp::MyWaypointControl::MyWaypointControl_obj10_Bindings 
+class RoutesOverBingMapsApp::MyWaypointControl::MyWaypointControl_obj11_Bindings 
     : public ::XamlBindingInfo::ReferenceTypeXamlBindings<::Windows::Services::Maps::MapLocation>
 {
 public:
-    MyWaypointControl_obj10_Bindings()
+    MyWaypointControl_obj11_Bindings()
     {
     }
 
@@ -42,8 +42,8 @@ public:
     {
         switch(__connectionId)
         {
-            case 10:
-                this->obj10 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+            case 11:
+                this->obj11 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
                 break;
         }
     }
@@ -73,7 +73,7 @@ public:
     }
 private:
     // Fields for each control that has bindings.
-    ::Platform::WeakReference obj10;
+    ::Platform::WeakReference obj11;
 
     // Update methods for each path node used in binding steps.
     void Update_(::Windows::Services::Maps::MapLocation^ obj, int phase)
@@ -100,9 +100,9 @@ private:
     {
         if((phase & ((1 << 0) | NOT_PHASED )) != 0)
         {
-            if (this->obj10 != nullptr)
+            if (this->obj11 != nullptr)
             {
-                ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj10.Resolve<::Windows::UI::Xaml::Controls::TextBlock>(), obj, nullptr);
+                ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj11.Resolve<::Windows::UI::Xaml::Controls::TextBlock>(), obj, nullptr);
             }
         }
     }
@@ -127,46 +127,34 @@ public:
     {
         switch(__connectionId)
         {
-            case 4:
-                this->obj4 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
-                break;
             case 5:
-                this->obj5 = safe_cast<::Windows::UI::Xaml::Controls::ComboBox^>(__target);
-                this->obj5->RegisterPropertyChangedCallback(::Windows::UI::Xaml::Controls::Primitives::Selector::SelectedValueProperty,
-                    ref new ::Windows::UI::Xaml::DependencyPropertyChangedCallback( 
-                        [this] (::Windows::UI::Xaml::DependencyObject^ sender, Windows::UI::Xaml::DependencyProperty^ prop)
-                        {
-                            if (this->IsInitialized())
-                            {
-                                // Update Two Way binding
-                                this->GetDataRoot()->OptionOfInput = safe_cast<::RoutesOverBingMapsApp::WaypointInputOption>(this->obj5->SelectedValue);
-                            }
-                        }));
+                this->obj5 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
                 break;
             case 6:
-                this->obj6 = safe_cast<::Windows::UI::Xaml::Controls::AutoSuggestBox^>(__target);
-                this->obj6->RegisterPropertyChangedCallback(::Windows::UI::Xaml::Controls::AutoSuggestBox::TextProperty,
+                this->obj6 = safe_cast<::Windows::UI::Xaml::Controls::ComboBox^>(__target);
+                this->obj6->RegisterPropertyChangedCallback(::Windows::UI::Xaml::Controls::Primitives::Selector::SelectedValueProperty,
                     ref new ::Windows::UI::Xaml::DependencyPropertyChangedCallback( 
                         [this] (::Windows::UI::Xaml::DependencyObject^ sender, Windows::UI::Xaml::DependencyProperty^ prop)
                         {
                             if (this->IsInitialized())
                             {
                                 // Update Two Way binding
-                                this->GetDataRoot()->Address = this->obj6->Text;
+                                this->GetDataRoot()->OptionOfInput = safe_cast<::RoutesOverBingMapsApp::WaypointInputOption>(this->obj6->SelectedValue);
                             }
                         }));
                 break;
             case 7:
-                this->obj7 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
-                this->obj7->LostFocus += ref new Windows::UI::Xaml::RoutedEventHandler(
-                        [this] (::Platform::Object^ sender, ::Windows::UI::Xaml::RoutedEventArgs^ e)
+                this->obj7 = safe_cast<::Windows::UI::Xaml::Controls::AutoSuggestBox^>(__target);
+                this->obj7->RegisterPropertyChangedCallback(::Windows::UI::Xaml::Controls::AutoSuggestBox::TextProperty,
+                    ref new ::Windows::UI::Xaml::DependencyPropertyChangedCallback( 
+                        [this] (::Windows::UI::Xaml::DependencyObject^ sender, Windows::UI::Xaml::DependencyProperty^ prop)
                         {
                             if (this->IsInitialized())
                             {
                                 // Update Two Way binding
-                                this->GetDataRoot()->Latitude = safe_cast<::default::float64>(this->LookupConverter("FromString2Double")->ConvertBack(this->obj7->Text, ::default::float64::typeid, nullptr, nullptr));
+                                this->GetDataRoot()->Address = this->obj7->Text;
                             }
-                        });
+                        }));
                 break;
             case 8:
                 this->obj8 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
@@ -176,7 +164,19 @@ public:
                             if (this->IsInitialized())
                             {
                                 // Update Two Way binding
-                                this->GetDataRoot()->Longitude = safe_cast<::default::float64>(this->LookupConverter("FromString2Double")->ConvertBack(this->obj8->Text, ::default::float64::typeid, nullptr, nullptr));
+                                this->GetDataRoot()->Latitude = safe_cast<::default::float64>(this->LookupConverter("FromString2Double")->ConvertBack(this->obj8->Text, ::default::float64::typeid, nullptr, nullptr));
+                            }
+                        });
+                break;
+            case 9:
+                this->obj9 = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
+                this->obj9->LostFocus += ref new Windows::UI::Xaml::RoutedEventHandler(
+                        [this] (::Platform::Object^ sender, ::Windows::UI::Xaml::RoutedEventArgs^ e)
+                        {
+                            if (this->IsInitialized())
+                            {
+                                // Update Two Way binding
+                                this->GetDataRoot()->Longitude = safe_cast<::default::float64>(this->LookupConverter("FromString2Double")->ConvertBack(this->obj9->Text, ::default::float64::typeid, nullptr, nullptr));
                             }
                         });
                 break;
@@ -200,11 +200,11 @@ public:
 
 private:
     // Fields for each control that has bindings.
-    ::Windows::UI::Xaml::Controls::TextBlock^ obj4;
-    ::Windows::UI::Xaml::Controls::ComboBox^ obj5;
-    ::Windows::UI::Xaml::Controls::AutoSuggestBox^ obj6;
-    ::Windows::UI::Xaml::Controls::TextBox^ obj7;
+    ::Windows::UI::Xaml::Controls::TextBlock^ obj5;
+    ::Windows::UI::Xaml::Controls::ComboBox^ obj6;
+    ::Windows::UI::Xaml::Controls::AutoSuggestBox^ obj7;
     ::Windows::UI::Xaml::Controls::TextBox^ obj8;
+    ::Windows::UI::Xaml::Controls::TextBox^ obj9;
     
     // Fields for binding tracking.
     ::Platform::WeakReference cachePC_;
@@ -237,42 +237,42 @@ private:
     {
         if((phase & ((1 << 0) | NOT_PHASED | DATA_CHANGED)) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj4, obj.ToString(), nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj5, obj.ToString(), nullptr);
         }
     }
     void Update_InputOptions(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::WayptInputComboOpt^>^ obj, int phase)
     {
         if((phase & ((1 << 0) | NOT_PHASED )) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj5, obj, nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj6, obj, nullptr);
         }
     }
     void Update_OptionOfInput(::RoutesOverBingMapsApp::WaypointInputOption obj, int phase)
     {
         if((phase & ((1 << 0) | NOT_PHASED | DATA_CHANGED)) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_Primitives_Selector_SelectedValue(this->obj5, obj, nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_Primitives_Selector_SelectedValue(this->obj6, obj, nullptr);
         }
     }
     void Update_Address(::Platform::String^ obj, int phase)
     {
         if((phase & ((1 << 0) | NOT_PHASED | DATA_CHANGED)) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_AutoSuggestBox_Text(this->obj6, obj, nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_AutoSuggestBox_Text(this->obj7, obj, nullptr);
         }
     }
     void Update_Latitude(::default::float64 obj, int phase)
     {
         if((phase & ((1 << 0) | NOT_PHASED | DATA_CHANGED)) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBox_Text(this->obj7, safe_cast<::Platform::String^>(this->LookupConverter("FromString2Double")->Convert(obj, ::Platform::String::typeid, nullptr, nullptr)), nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBox_Text(this->obj8, safe_cast<::Platform::String^>(this->LookupConverter("FromString2Double")->Convert(obj, ::Platform::String::typeid, nullptr, nullptr)), nullptr);
         }
     }
     void Update_Longitude(::default::float64 obj, int phase)
     {
         if((phase & ((1 << 0) | NOT_PHASED | DATA_CHANGED)) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBox_Text(this->obj8, safe_cast<::Platform::String^>(this->LookupConverter("FromString2Double")->Convert(obj, ::Platform::String::typeid, nullptr, nullptr)), nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBox_Text(this->obj9, safe_cast<::Platform::String^>(this->LookupConverter("FromString2Double")->Convert(obj, ::Platform::String::typeid, nullptr, nullptr)), nullptr);
         }
     }
 
@@ -377,14 +377,19 @@ void ::RoutesOverBingMapsApp::MyWaypointControl::Connect(int __connectionId, ::P
             this->narrowState = safe_cast<::Windows::UI::Xaml::VisualState^>(__target);
         }
         break;
-    case 5:
+    case 4:
+        {
+            this->waitingRing = safe_cast<::Windows::UI::Xaml::Controls::ProgressRing^>(__target);
+        }
+        break;
+    case 6:
         {
             this->wayptInputTypeComboBox = safe_cast<::Windows::UI::Xaml::Controls::ComboBox^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::ComboBox^>(this->wayptInputTypeComboBox))->SelectionChanged += ref new ::Windows::UI::Xaml::Controls::SelectionChangedEventHandler(this, (void (::RoutesOverBingMapsApp::MyWaypointControl::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::Controls::SelectionChangedEventArgs^))&MyWaypointControl::OnSelChangedInputOptCBox);
         }
         break;
-    case 6:
+    case 7:
         {
             this->addressASBox = safe_cast<::Windows::UI::Xaml::Controls::AutoSuggestBox^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AutoSuggestBox^>(this->addressASBox))->TextChanged += ref new ::Windows::Foundation::TypedEventHandler<::Windows::UI::Xaml::Controls::AutoSuggestBox^, ::Windows::UI::Xaml::Controls::AutoSuggestBoxTextChangedEventArgs^>(this, (void (::RoutesOverBingMapsApp::MyWaypointControl::*)
@@ -395,17 +400,17 @@ void ::RoutesOverBingMapsApp::MyWaypointControl::Connect(int __connectionId, ::P
                 (::Windows::UI::Xaml::Controls::AutoSuggestBox^, ::Windows::UI::Xaml::Controls::AutoSuggestBoxQuerySubmittedEventArgs^))&MyWaypointControl::OnQuerySubmittedAddrASBox);
         }
         break;
-    case 7:
+    case 8:
         {
             this->latitudeTextBox = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
         }
         break;
-    case 8:
+    case 9:
         {
             this->longitudeTextBox = safe_cast<::Windows::UI::Xaml::Controls::TextBox^>(__target);
         }
         break;
-    case 9:
+    case 10:
         {
             this->locateButton = safe_cast<::Windows::UI::Xaml::Controls::Button^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::Button^>(this->locateButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MyWaypointControl::*)
@@ -432,14 +437,14 @@ void ::RoutesOverBingMapsApp::MyWaypointControl::Connect(int __connectionId, ::P
                 element1->Loading += ref new ::Windows::Foundation::TypedEventHandler<::Windows::UI::Xaml::FrameworkElement^, ::Platform::Object^>(bindings, &::XamlBindingInfo::XamlBindings::Loading);
             }
             break;
-        case 10:
+        case 11:
             {
-                ::Windows::UI::Xaml::Controls::TextBlock^ element10 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
-                MyWaypointControl_obj10_Bindings* objBindings = new MyWaypointControl_obj10_Bindings();
-                objBindings->SetDataRoot(element10->DataContext);
+                ::Windows::UI::Xaml::Controls::TextBlock^ element11 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+                MyWaypointControl_obj11_Bindings* objBindings = new MyWaypointControl_obj11_Bindings();
+                objBindings->SetDataRoot(element11->DataContext);
                 bindings = ref new ::XamlBindingInfo::XamlBindings(objBindings);
-                bindings->SubscribeForDataContextChanged(element10);
-                ::Windows::UI::Xaml::DataTemplate::SetExtensionInstance(element10, bindings);
+                bindings->SubscribeForDataContextChanged(element11);
+                ::Windows::UI::Xaml::DataTemplate::SetExtensionInstance(element11, bindings);
             }
             break;
     }

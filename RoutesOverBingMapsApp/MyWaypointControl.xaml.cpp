@@ -281,9 +281,11 @@ void MyWaypointControl::OnClickLocateButton(Platform::Object ^sender, RoutedEven
     position.Latitude = Latitude;
     position.Longitude = Longitude;
 
-    // while awaiting for verification, disable these:
+    // while awaiting for verification:
     locateButton->IsEnabled = false;
     wayptInputTypeComboBox->IsEnabled = false;
+    waitingRing->IsActive = true;
+    waitingRing->Visibility = Windows::UI::Xaml::Visibility::Visible;
 
     // Perform reverse geocoding:
     concurrency::create_task(
@@ -297,6 +299,8 @@ void MyWaypointControl::OnClickLocateButton(Platform::Object ^sender, RoutedEven
             longitudeTextBox->IsReadOnly = false;
         }
 
+        waitingRing->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+        waitingRing->IsActive = false;
         locateButton->IsEnabled = true;
         wayptInputTypeComboBox->IsEnabled = true;
 

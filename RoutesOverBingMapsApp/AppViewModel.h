@@ -119,14 +119,23 @@ namespace RoutesOverBingMapsApp
         /// Marks the current state of this instance
         /// (location data) as verified by geocoding.
         /// </summary>
-        void MarkVerified() { m_lastVerifGLHashCode = GetGeoLocHashCode(); }
+        void MarkVerified()
+        {
+            m_lastVerifGLHashCode = GetGeoLocHashCode();
+        }
     };
 
 
     /// <summary>
-    /// Enumerates the possible means of transportation to be used in the routes.
+    /// Enumerates the options for web services that provide routes.
     /// </summary>
-    public enum class TransportOption { Car = 0, Transit, Walking };
+    public enum class RouteService
+    {
+        Microsoft
+        ,GoogleMaps
+        ,Tomtom
+    };
+
 
     /// <summary>
     /// Performs conversion between real number and string.
@@ -157,7 +166,7 @@ namespace RoutesOverBingMapsApp
 
         IObservableVector<Waypoint ^> ^m_waypoints;
 
-        TransportOption m_transport;
+        RouteService m_routeService;
         
     public:
 
@@ -175,16 +184,16 @@ namespace RoutesOverBingMapsApp
         }
 
         /// <summary>
-        /// Gets or sets the option for transportation.
+        /// Gets or sets the route service.
         /// </summary>
         /// <value>
-        /// The code for transportation option.
+        /// The code for route service.
         /// </value>
-        property TransportOption Transport
+        property RouteService Service
         {
-            TransportOption get() { return m_transport; }
+            RouteService get() { return m_routeService; }
 
-            void set(TransportOption value) { m_transport = value; }
+            void set(RouteService value) { m_routeService = value; }
         }
     };
 

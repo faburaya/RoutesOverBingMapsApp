@@ -56,24 +56,30 @@
                     VerticalAlignment="Center"/>
         
         <Canvas>
-            <ProgressRing Name="waitingRing" Visibility="Collapsed"></ProgressRing>
+            <ProgressRing Name="waitingRing" Visibility="Collapsed"/>
 
             <Grid Canvas.Left="16" Canvas.Top="16">
 
                 <StackPanel Orientation="Vertical">
                     <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
                         <CommandBar.Content>
-                            <TextBlock Name="transportTextBlock"
+                            <TextBlock Name="serviceTextBlock"
                                        Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
                         </CommandBar.Content>
-                        <AppBarToggleButton Name="useCarButton" Checked="OnCheckUseCarButton">
-                            <FontIcon Glyph="&#xE804;" FontSize="20"/>
+                        <AppBarToggleButton Name="useMicrosoftButton" Checked="OnCheckUseMicrosoftButton">
+                            <AppBarToggleButton.Icon>
+                                <BitmapIcon UriSource="ms-appx:///Assets/microsoft_icon.png"/>
+                            </AppBarToggleButton.Icon>
                         </AppBarToggleButton>
-                        <AppBarToggleButton Name="useTransitButton" Checked="OnCheckUseTransitButton">
-                            <FontIcon Glyph="&#xE806;" FontSize="20"/>
+                        <AppBarToggleButton Name="useGoogleButton" Checked="OnCheckUseGoogleButton">
+                            <AppBarToggleButton.Icon>
+                                <BitmapIcon UriSource="ms-appx:///Assets/google_maps_icon.png"/>
+                            </AppBarToggleButton.Icon>
                         </AppBarToggleButton>
-                        <AppBarToggleButton Name="useWalkingButton" Checked="OnCheckUseWalkingButton">
-                            <FontIcon Glyph="&#xE805;" FontSize="20"/>
+                        <AppBarToggleButton Name="useTomtomButton" Checked="OnCheckUseTomtomButton">
+                            <AppBarToggleButton.Icon>
+                                <BitmapIcon UriSource="ms-appx:///Assets/tomtom_icon.png"/>
+                            </AppBarToggleButton.Icon>
                         </AppBarToggleButton>
                     </CommandBar>
                     
@@ -105,11 +111,14 @@
                         <AppBarButton Name="addWaypointButton"
                                       Icon="Add"
                                       Click="OnClickAddWaypointButton"/>
-                        
+
                         <AppBarButton Name="findRouteButton"
-                                      Icon="Play"
                                       Click="OnClickFindRouteButton"
-                                      IsEnabled="False"/>
+                                      IsEnabled="False">
+                            <AppBarButton.Icon>
+                                <FontIcon Glyph="&#xE804;" FontSize="20"/>
+                            </AppBarButton.Icon>
+                        </AppBarButton>
                     </CommandBar>
                 </StackPanel>
             </Grid>
