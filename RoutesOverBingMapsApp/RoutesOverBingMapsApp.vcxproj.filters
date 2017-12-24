@@ -24,6 +24,9 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="RouteHelper.cpp" />
+    <ClCompile Include="Utils.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -37,6 +40,9 @@
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="RouteHelper.h" />
+    <ClInclude Include="Utils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

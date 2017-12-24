@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "TheMap.h"
+#include "Utils.h"
 #include <cstring>
 #include <algorithm>
+#include <memory>
 #include <array>
 
 #undef min
@@ -44,6 +46,17 @@ namespace RoutesOverBingMapsApp
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="TheMap"/> class.
+    /// </summary>
+    /// <param name="mapControl">The map control.</param>
+    TheMap::TheMap(MapControl ^mapControl)
+        : m_mapControl(mapControl)
+        , m_itineraryLine(ref new MapPolyline())
+    {
+    }
+
+
+    /// <summary>
     /// Finds the given waypoint in the list of map elements.
     /// </summary>
     /// <param name="wayptOrder">The waypoint order in the list.</param>
@@ -66,7 +79,7 @@ namespace RoutesOverBingMapsApp
 
             static auto typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
 
-            // got the polyline? skip it
+            // got a polyline? skip it
             if (element->GetType()->FullName->Equals(typePolylineFName))
             {
                 --vecIdx;
@@ -132,7 +145,7 @@ namespace RoutesOverBingMapsApp
 
         m_mapControl->MapElements->InsertAt(vecIdx, pin);
 
-        RecreatePolyline();
+        UpdateItineraryLine();
     }
 
 
@@ -147,7 +160,7 @@ namespace RoutesOverBingMapsApp
         if (FindWaypoint(wayptOrder, &vecIdx))
         {
             m_mapControl->MapElements->RemoveAt(vecIdx);
-            RecreatePolyline();
+            UpdateItineraryLine();
         }
     }
 
@@ -158,111 +171,62 @@ namespace RoutesOverBingMapsApp
     void TheMap::ClearWaypoints()
     {
         m_mapControl->MapElements->Clear();
+        m_itineraryLine = nullptr;
     }
 
 
     /// <summary>
-    /// Recreates the polyline for the route.
+    /// Updates the polyline for the route itinerary (the one that contains all waypoints).
     /// </summary>
-    void TheMap::RecreatePolyline()
+    void TheMap::UpdateItineraryLine()
     {
-        /* This will accumulate key data to define the geo-bounding-box
-           that encompasses the whole route in the map view */
-        struct {
-            double loLatitude, hiLatitude;
-            double loLongitude, hiLongitude;
-        } geoBox;
+        std::shared_ptr<std::vector<BasicGeoposition>> positions(new std::vector<BasicGeoposition>());
 
-        geoBox.loLatitude = geoBox.loLongitude = +180.0;
-        geoBox.hiLatitude = geoBox.hiLongitude = -180.0;
+        positions->reserve(m_mapControl->MapElements->Size);
 
-        bool plNotFound(true);
-
-        static auto typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
-
-        auto positions = ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>();
-
-        for (uint32 idx = 0; idx < m_mapControl->MapElements->Size; ++idx)
+        for (auto entry : m_mapControl->MapElements)
         {
-            MapElement ^element = m_mapControl->MapElements->GetAt(idx);
+            static auto typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
 
-            // found polyline?
-            if (plNotFound && element->GetType()->FullName->Equals(typePolylineFName))
-            {
-                m_mapControl->MapElements->RemoveAt(idx);
-                plNotFound = false;
+            auto element = static_cast<MapElement ^> (entry);
+
+            // got a polyline? skip it
+            if (element->GetType()->FullName->Equals(typePolylineFName))
                 continue;
-            }
 
-            MapIcon ^pin = safe_cast<MapIcon ^> (m_mapControl->MapElements->GetAt(idx));
+            MapIcon ^pin = safe_cast<MapIcon ^> (element);
 
-            if (pin->Location->Position.Latitude < geoBox.loLatitude)
-                geoBox.loLatitude = pin->Location->Position.Latitude;
-
-            if (pin->Location->Position.Latitude > geoBox.hiLatitude)
-                geoBox.hiLatitude = pin->Location->Position.Latitude;
-
-            if (pin->Location->Position.Longitude < geoBox.loLongitude)
-                geoBox.loLongitude = pin->Location->Position.Longitude;
-
-            if (pin->Location->Position.Longitude > geoBox.hiLongitude)
-                geoBox.hiLongitude = pin->Location->Position.Longitude;
-
-            positions->Append(pin->Location->Position);
+            positions->push_back(pin->Location->Position);
         }
 
         // no remaining pin's?
-        if (positions->Size == 0)
+        if (positions->empty())
             return;
 
-        /* Are the latitude values of the box distant enough
-        to be seen closer in the oposite face of the earth? */
-        if (geoBox.hiLatitude - geoBox.loLatitude > 180.0)
-        {
-            // switch up and down:
-            auto temp = geoBox.hiLatitude;
-            geoBox.hiLatitude = geoBox.loLatitude;
-            geoBox.loLatitude = temp;
-        }
-
-        /* Are the longitude values of the box distant enough
-        to be seen closer in the oposite face of the earth? */
-        if (geoBox.hiLongitude - geoBox.loLongitude > 180.0)
-        {
-            // switch left and right:
-            auto temp = geoBox.hiLongitude;
-            geoBox.hiLongitude = geoBox.loLongitude;
-            geoBox.loLongitude = temp;
-        }
-
-        double lgtDistDegsFromBorder = std::max(0.05 * (geoBox.hiLongitude - geoBox.loLongitude), 0.01);
-        double lttDistDegsFromBorder = std::max(0.05 * (geoBox.hiLatitude - geoBox.loLatitude), 0.01);
-
-        BasicGeoposition nwCorner;
-        nwCorner.Altitude = 0.0;
-        nwCorner.Latitude = geoBox.hiLatitude + lttDistDegsFromBorder;
-        nwCorner.Longitude = geoBox.loLongitude - lgtDistDegsFromBorder;
-
-        BasicGeoposition seCorner;
-        seCorner.Altitude = 0.0;
-        seCorner.Latitude = geoBox.loLatitude - lttDistDegsFromBorder;
-        seCorner.Longitude = geoBox.hiLongitude + lgtDistDegsFromBorder;
-
         concurrency::create_task(
-            m_mapControl->TrySetViewBoundsAsync(ref new GeoboundingBox(nwCorner, seCorner), nullptr, MapAnimationKind::Bow)
+            m_mapControl->TrySetViewBoundsAsync(CalculateViewBoundaries(*positions),
+                                                nullptr,
+                                                MapAnimationKind::Linear)
         )
         .then([this, positions](bool success)
         {
-            if (positions->Size < 2)
+            if (positions->size() < 2)
                 return;
 
-            auto polyline = ref new MapPolyline();
-            polyline->Path = ref new Geopath(positions);
-            polyline->StrokeColor = Windows::UI::Colors::Black;
-            polyline->StrokeThickness = 2;
-            polyline->StrokeDashed = true;
+            if (m_itineraryLine == nullptr)
+            {
+                m_itineraryLine = ref new MapPolyline();
 
-            m_mapControl->MapElements->Append(polyline);
+                m_itineraryLine->StrokeColor = Windows::UI::Colors::Black;
+                m_itineraryLine->StrokeThickness = 2;
+                m_itineraryLine->StrokeDashed = true;
+
+                m_mapControl->MapElements->Append(m_itineraryLine);
+            }
+
+            m_itineraryLine->Path = ref new Geopath(
+                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(*positions))
+            );
         });
     }
 

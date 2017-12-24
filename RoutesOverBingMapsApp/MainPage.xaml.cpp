@@ -6,6 +6,8 @@
 #include "pch.h"
 #include "MainPage.xaml.h"
 #include "TheMap.h"
+#include <3FD\utils_winrt.h>
+
 
 using namespace RoutesOverBingMapsApp;
 
@@ -34,6 +36,15 @@ MainPage::MainPage()
 
     TheMap::Initialize(mapControl);
 }
+
+
+// default parameters for exception notification and logging
+static const _3fd::utils::UwpXaml::ExNotifAndLogParams exHndParams
+{
+    Platform::StringReference(L"Application error!\n"),
+    Platform::StringReference(L"Cancel"),
+    _3fd::core::Logger::PRIO_ERROR
+};
 
 
 /// <summary>
@@ -180,4 +191,6 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
             ViewModel->Waypoints->RemoveAt(idx);
         }
     }
+
+    // TO DO
 }

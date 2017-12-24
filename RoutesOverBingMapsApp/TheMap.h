@@ -1,6 +1,10 @@
 #pragma once
 
+#include <vector>
 #include <memory>
+#include <cinttypes>
+#include <cpprest/json.h>
+
 
 namespace RoutesOverBingMapsApp
 {
@@ -20,12 +24,13 @@ namespace RoutesOverBingMapsApp
 
         MapControl ^m_mapControl;
 
-        TheMap(MapControl ^mapControl)
-            : m_mapControl(mapControl) {}
+        MapPolyline ^m_itineraryLine;
+
+        TheMap(MapControl ^mapControl);
 
         bool FindWaypoint(int wayptOrder, int *whereIdx) const;
 
-        void RecreatePolyline();
+        void UpdateItineraryLine();
 
     public:
 
@@ -42,23 +47,6 @@ namespace RoutesOverBingMapsApp
         void ClearWaypoints();
 
         void GetCenterPosition(double &latitude, double &longitude);
-    };
-
-
-    /// <summary>
-    /// Functor for comparison of <see cref="Windows::Devices::Geolocation::BasicGeoposition" /> value types.
-    /// </summary>
-    /// <remarks>
-    /// This is required by <see cref="Platform::Vector"/>, otherwise compilation error C2678 is issued.
-    /// </remarks>
-    struct BGeoPosComparator
-    {
-        constexpr bool operator()(const BasicGeoposition &left, const BasicGeoposition &right) const
-        {
-            return (left.Altitude == right.Altitude
-                && left.Latitude == right.Latitude
-                && left.Longitude == right.Longitude);
-        }
     };
 
 }// end of namespace RoutesOverBingMapsApp
