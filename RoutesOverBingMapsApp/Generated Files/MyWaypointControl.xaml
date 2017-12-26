@@ -44,9 +44,9 @@
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <ProgressRing x:ConnectionId='4' Name="waitingRing" Visibility="Collapsed"/>
-        
         <StackPanel Orientation="Horizontal" Height="32">
+
+            <ProgressRing x:ConnectionId='4' Name="waitingRing" Visibility="Collapsed"/>
 
             <SymbolIcon Symbol="Flag"
                         VerticalAlignment="Center"

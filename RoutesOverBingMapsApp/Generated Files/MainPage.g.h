@@ -55,7 +55,8 @@ namespace RoutesOverBingMapsApp
     
     private:
         bool _contentLoaded;
-        class MainPage_obj12_Bindings;
+        class MainPage_obj14_Bindings;
+        class MainPage_obj18_Bindings;
         class MainPage_obj1_Bindings;
     
         ::XamlBindingInfo::XamlBindings^ Bindings;
@@ -65,6 +66,8 @@ namespace RoutesOverBingMapsApp
         private: ::Windows::UI::Xaml::Controls::SymbolIcon^ crosshairSymbol;
         private: ::Windows::UI::Xaml::Controls::ProgressRing^ waitingRing;
         private: ::Windows::UI::Xaml::Controls::ListView^ listOfWaypoints;
+        private: ::Windows::UI::Xaml::Controls::ListView^ listOfRoutes;
+        private: ::Windows::UI::Xaml::Controls::AppBarButton^ clearRoutesButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ clearWaypointsButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ removeWaypointButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ addWaypointButton;

@@ -22,6 +22,7 @@
                         <AdaptiveTrigger MinWindowWidth="641"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="clearRoutesButton.Label" Value="Clear routes"/>
                         <Setter Target="clearWaypointsButton.Label" Value="Clear all"/>
                         <Setter Target="removeWaypointButton.Label" Value="Remove waypoint"/>
                         <Setter Target="addWaypointButton.Label" Value="Add waypoint"/>
@@ -33,6 +34,7 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="clearRoutesButton.Label" Value="Clear routes"/>
                         <Setter Target="clearWaypointsButton.Label" Value="Clear"/>
                         <Setter Target="removeWaypointButton.Label" Value="Remove"/>
                         <Setter Target="addWaypointButton.Label" Value="Add"/>
@@ -54,12 +56,11 @@
                     Foreground="{StaticResource BgBrushTransparentBlack}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>
-        
+
         <Canvas>
             <ProgressRing Name="waitingRing" Visibility="Collapsed"/>
 
             <Grid Canvas.Left="16" Canvas.Top="16">
-
                 <StackPanel Orientation="Vertical">
                     <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
                         <CommandBar.Content>
@@ -67,26 +68,28 @@
                                        Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
                         </CommandBar.Content>
                         <AppBarToggleButton Name="useMicrosoftButton" Checked="OnCheckUseMicrosoftButton">
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/microsoft_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/microsoft_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
                         <AppBarToggleButton Name="useGoogleButton" Checked="OnCheckUseGoogleButton">
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/google_maps_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/google_maps_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
                         <AppBarToggleButton Name="useTomtomButton" Checked="OnCheckUseTomtomButton">
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/tomtom_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/tomtom_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
                     </CommandBar>
                     
                     <ListView Name="listOfWaypoints"
                               ItemsSource="{x:Bind ViewModel.Waypoints}"
                               SelectionChanged="OnSelectWaypoint">
-                        <TransitionCollection/>
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection/>
+                        </ListView.ItemContainerTransitions>
                         <ListView.ItemTemplate>
                             <DataTemplate x:DataType="local:Waypoint">
                                 <StackPanel Orientation="Horizontal">
@@ -96,11 +99,40 @@
                         </ListView.ItemTemplate>
                     </ListView>
 
+                    <ListView Name="listOfRoutes"
+                              ItemsSource="{x:Bind ViewModel.Routes}"
+                              Visibility="Collapsed">
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection/>
+                        </ListView.ItemContainerTransitions>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:RouteInfo">
+                                <StackPanel Orientation="Horizontal"
+                                            Background="{x:Bind Background}">
+                                    <Image Source="{x:Bind ServiceImageSource}"
+                                           Height="24"
+                                           VerticalAlignment="Top"
+                                           Margin="12,12,12,12"/>
+                                    <StackPanel Orientation="Vertical"
+                                                Background="Transparent">
+                                        <TextBlock Text="{x:Bind Headline}" Width="288" Margin="4,4,4,0" FontWeight="Bold"/>
+                                        <TextBlock Text="{x:Bind Details}" Width="288" Margin="4,0,4,4"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
                     <CommandBar DefaultLabelPosition="Right" Opacity="0.80">
+
+                        <AppBarButton Name="clearRoutesButton"
+                                      Icon="Clear"
+                                      Click="OnClickClearRoutesButton"
+                                      Visibility="Collapsed"/>
 
                         <AppBarButton Name="clearWaypointsButton"
                                       Icon="Clear"
-                                      Click="OnClickClearButton"
+                                      Click="OnClickClearWaypointsButton"
                                       IsEnabled="False"/>
                         
                         <AppBarButton Name="removeWaypointButton"

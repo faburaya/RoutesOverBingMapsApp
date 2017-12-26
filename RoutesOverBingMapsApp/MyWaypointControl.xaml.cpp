@@ -17,9 +17,11 @@ using namespace RoutesOverBingMapsApp;
 
 // The User Control item template is documented at http://go.microsoft.com/fwlink/?LinkId=234236
 
+
 ////////////////////////////
 // MyWaypointControl Class
 ////////////////////////////
+
 
 IObservableVector<WayptInputComboOpt ^> ^ MyWaypointControl::optionsOfInput = nullptr;
 

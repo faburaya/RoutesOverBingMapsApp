@@ -22,6 +22,7 @@
                         <AdaptiveTrigger MinWindowWidth="641"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="clearRoutesButton.Label" Value="Clear routes"/>
                         <Setter Target="clearWaypointsButton.Label" Value="Clear all"/>
                         <Setter Target="removeWaypointButton.Label" Value="Remove waypoint"/>
                         <Setter Target="addWaypointButton.Label" Value="Add waypoint"/>
@@ -33,6 +34,7 @@
                         <AdaptiveTrigger MinWindowWidth="0" />
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                        <Setter Target="clearRoutesButton.Label" Value="Clear routes"/>
                         <Setter Target="clearWaypointsButton.Label" Value="Clear"/>
                         <Setter Target="removeWaypointButton.Label" Value="Remove"/>
                         <Setter Target="addWaypointButton.Label" Value="Add"/>
@@ -54,43 +56,68 @@
                     Foreground="{StaticResource BgBrushTransparentBlack}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"/>
-        
+
         <Canvas>
             <ProgressRing x:ConnectionId='6' Name="waitingRing" Visibility="Collapsed"/>
 
             <Grid Canvas.Left="16" Canvas.Top="16">
-
                 <StackPanel Orientation="Vertical">
                     <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
                         <CommandBar.Content>
-                            <TextBlock x:ConnectionId='14' Name="serviceTextBlock"
+                            <TextBlock x:ConnectionId='20' Name="serviceTextBlock"
                                        Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
                         </CommandBar.Content>
-                        <AppBarToggleButton x:ConnectionId='15' Name="useMicrosoftButton"                                    >
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/microsoft_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                        <AppBarToggleButton x:ConnectionId='21' Name="useMicrosoftButton"                                    >
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/microsoft_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton x:ConnectionId='16' Name="useGoogleButton"                                 >
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/google_maps_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                        <AppBarToggleButton x:ConnectionId='22' Name="useGoogleButton"                                 >
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/google_maps_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton x:ConnectionId='17' Name="useTomtomButton"                                 >
-                            <AppBarToggleButton.Icon>
-                                <BitmapIcon UriSource="ms-appx:///Assets/tomtom_icon.png"/>
-                            </AppBarToggleButton.Icon>
+                        <AppBarToggleButton x:ConnectionId='23' Name="useTomtomButton"                                 >
+                            <AppBarToggleButton.Content>
+                                <Image Source="ms-appx:///Assets/tomtom_icon.png"/>
+                            </AppBarToggleButton.Content>
                         </AppBarToggleButton>
                     </CommandBar>
                     
                     <ListView x:ConnectionId='7' Name="listOfWaypoints"
                                                                         
                                                                  >
-                        <TransitionCollection/>
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection/>
+                        </ListView.ItemContainerTransitions>
                         <ListView.ItemTemplate>
                             <DataTemplate                            >
-                                <StackPanel x:ConnectionId='12' Orientation="Horizontal">
-                                    <local:MyWaypointControl x:ConnectionId='13'                          />
+                                <StackPanel x:ConnectionId='18' Orientation="Horizontal">
+                                    <local:MyWaypointControl x:ConnectionId='19'                          />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+
+                    <ListView x:ConnectionId='8' Name="listOfRoutes"
+                                                                     
+                              Visibility="Collapsed">
+                        <ListView.ItemContainerTransitions>
+                            <TransitionCollection/>
+                        </ListView.ItemContainerTransitions>
+                        <ListView.ItemTemplate>
+                            <DataTemplate                             >
+                                <StackPanel x:ConnectionId='14' Orientation="Horizontal"
+                                                                            >
+                                    <Image x:ConnectionId='15'                                     
+                                           Height="24"
+                                           VerticalAlignment="Top"
+                                           Margin="12,12,12,12"/>
+                                    <StackPanel Orientation="Vertical"
+                                                Background="Transparent">
+                                        <TextBlock x:ConnectionId='16'                          Width="288" Margin="4,4,4,0" FontWeight="Bold"/>
+                                        <TextBlock x:ConnectionId='17'                         Width="288" Margin="4,0,4,4"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
@@ -98,21 +125,26 @@
 
                     <CommandBar DefaultLabelPosition="Right" Opacity="0.80">
 
-                        <AppBarButton x:ConnectionId='8' Name="clearWaypointsButton"
+                        <AppBarButton x:ConnectionId='9' Name="clearRoutesButton"
                                       Icon="Clear"
-                                                                
+                                                                      
+                                      Visibility="Collapsed"/>
+
+                        <AppBarButton x:ConnectionId='10' Name="clearWaypointsButton"
+                                      Icon="Clear"
+                                                                         
                                       IsEnabled="False"/>
                         
-                        <AppBarButton x:ConnectionId='9' Name="removeWaypointButton"
+                        <AppBarButton x:ConnectionId='11' Name="removeWaypointButton"
                                       Icon="Remove"
                                                                  
                                       IsEnabled="False"/>
                         
-                        <AppBarButton x:ConnectionId='10' Name="addWaypointButton"
+                        <AppBarButton x:ConnectionId='12' Name="addWaypointButton"
                                       Icon="Add"
                                                                       />
 
-                        <AppBarButton x:ConnectionId='11' Name="findRouteButton"
+                        <AppBarButton x:ConnectionId='13' Name="findRouteButton"
                                                                     
                                       IsEnabled="False">
                             <AppBarButton.Icon>

@@ -42,7 +42,9 @@ namespace RoutesOverBingMapsApp
 
         void OnClickRemoveButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
-        void OnClickClearButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+        void OnClickClearWaypointsButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+
+        void OnClickClearRoutesButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
         void OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
     };

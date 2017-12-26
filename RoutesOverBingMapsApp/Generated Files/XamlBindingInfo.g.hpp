@@ -134,6 +134,14 @@ namespace XamlBindingInfo
             }
         }
 
+        virtual void VectorChanged_RoutesOverBingMapsApp_RouteInfo(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::RouteInfo^>^ sender, ::Windows::Foundation::Collections::IVectorChangedEventArgs^ e)
+        {
+            if (this->_pBindingsTrackingWeakRef)
+            {
+                this->_pBindingsTrackingWeakRef->VectorChanged(sender, e);
+            }
+        }
+
         virtual void VectorChanged_RoutesOverBingMapsApp_WayptInputComboOpt(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::WayptInputComboOpt^>^ sender, ::Windows::Foundation::Collections::IVectorChangedEventArgs^ e)
         {
             if (this->_pBindingsTrackingWeakRef)
@@ -244,6 +252,22 @@ namespace XamlBindingInfo
             }
         }
 
+        void UpdateVectorChangedListener_RoutesOverBingMapsApp_RouteInfo(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::RouteInfo^>^ obj, ::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::RouteInfo^>^* pCache, ::Windows::Foundation::EventRegistrationToken* pToken)
+        {
+            if (*pCache != nullptr && !(*pCache)->Equals(obj))
+            {
+                (*pCache)->VectorChanged -= *pToken;
+                *pCache = nullptr;
+            }
+
+            if (*pCache == nullptr && obj != nullptr)
+            {
+                *pCache = obj;
+                *pToken = obj->VectorChanged += ref new ::Windows::Foundation::Collections::VectorChangedEventHandler<::RoutesOverBingMapsApp::RouteInfo^>(
+                    this, &::XamlBindingInfo::XamlBindingTracking::VectorChanged_RoutesOverBingMapsApp_RouteInfo);
+            }
+        }
+
         void UpdateVectorChangedListener_RoutesOverBingMapsApp_WayptInputComboOpt(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::WayptInputComboOpt^>^ obj, ::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::WayptInputComboOpt^>^* pCache, ::Windows::Foundation::EventRegistrationToken* pToken)
         {
             if (*pCache != nullptr && !(*pCache)->Equals(obj))
@@ -283,6 +307,22 @@ namespace XamlBindingInfo
             }
             obj->ViewModel = value;
         }
+        static void Set_Windows_UI_Xaml_Controls_Panel_Background(::Windows::UI::Xaml::Controls::Panel^ obj, ::Windows::UI::Xaml::Media::Brush^ value, ::Platform::String^ targetNullValue)
+        {
+            if (value == nullptr && targetNullValue != nullptr)
+            {
+                value = (::Windows::UI::Xaml::Media::Brush^) ::Windows::UI::Xaml::Markup::XamlBindingHelper::ConvertValue(::Windows::UI::Xaml::Media::Brush::typeid, targetNullValue);
+            }
+            obj->Background = value;
+        }
+        static void Set_Windows_UI_Xaml_Controls_Image_Source(::Windows::UI::Xaml::Controls::Image^ obj, ::Windows::UI::Xaml::Media::ImageSource^ value, ::Platform::String^ targetNullValue)
+        {
+            if (value == nullptr && targetNullValue != nullptr)
+            {
+                value = (::Windows::UI::Xaml::Media::ImageSource^) ::Windows::UI::Xaml::Markup::XamlBindingHelper::ConvertValue(::Windows::UI::Xaml::Media::ImageSource::typeid, targetNullValue);
+            }
+            obj->Source = value;
+        }
         static void Set_Windows_UI_Xaml_Controls_TextBlock_Text(::Windows::UI::Xaml::Controls::TextBlock^ obj, ::Platform::String^ value, ::Platform::String^ targetNullValue)
         {
             if (value == nullptr && targetNullValue != nullptr)
@@ -290,6 +330,14 @@ namespace XamlBindingInfo
                 value = targetNullValue;
             }
             obj->Text = value;
+        }
+        static void Set_Windows_UI_Xaml_Shapes_Shape_Fill(::Windows::UI::Xaml::Shapes::Shape^ obj, ::Windows::UI::Xaml::Media::Brush^ value, ::Platform::String^ targetNullValue)
+        {
+            if (value == nullptr && targetNullValue != nullptr)
+            {
+                value = (::Windows::UI::Xaml::Media::Brush^) ::Windows::UI::Xaml::Markup::XamlBindingHelper::ConvertValue(::Windows::UI::Xaml::Media::Brush::typeid, targetNullValue);
+            }
+            obj->Fill = value;
         }
         static void Set_Windows_UI_Xaml_Controls_Primitives_Selector_SelectedValue(::Windows::UI::Xaml::Controls::Primitives::Selector^ obj, ::Platform::Object^ value, ::Platform::String^ targetNullValue)
         {

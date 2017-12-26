@@ -1,10 +1,65 @@
 #include "pch.h"
 #include "Utils.h"
 #include <set>
+#include <sstream>
+#include <iomanip>
 
 
 namespace RoutesOverBingMapsApp
 {
+    /// <summary>
+    /// Rounds a duration given in seconds and creates a textual representation.
+    /// </summary>
+    /// <param name="seconds">The duration in seconds.</param>
+    /// <returns>Formatted time span text (like "5h 30 min").</returns>
+    std::wstring ToTimeSpanText(uint32_t seconds)
+    {
+        if (seconds < 60)
+            return L"1 min";
+
+        std::wostringstream woss;
+
+        int hours = seconds / 3600;
+        int minutes = (seconds - 3600 * hours) / 60;
+
+        if (hours != 0)
+        {
+            woss << hours << L" h";
+
+            if (minutes != 0)
+                woss << L' ';
+        }
+
+        int remainingSecs = seconds - 3600 * hours - 60 * seconds;
+
+        if (remainingSecs >= 30)
+            ++minutes;
+
+        if (minutes != 0)
+            woss << minutes << " min";
+
+        return woss.str();
+    }
+
+
+    /// <summary>
+    /// Creates a textual representation for distance given in meters.
+    /// </summary>
+    /// <param name="meters">The distance in meters.</param>
+    /// <returns>Formatted distance text (like "1.54 km").</returns>
+    std::wstring ToDistanceText(uint32_t meters)
+    {
+        std::wostringstream woss;
+
+        if (meters > 1000)
+            woss << std::setprecision(3) << (meters / 1000) << L" km";
+        else
+            woss << meters << " meters";
+
+        return woss.str();
+    }
+
+
     /// <summary>
     /// Calculates the boundaries of a view that covers all the
     /// geographic positions provided in the given list.
@@ -50,8 +105,8 @@ namespace RoutesOverBingMapsApp
             if (interval > largestInterval)
             {
                 largestInterval = interval;
-                bounds.west = *prevIter;
-                bounds.east = *iter;
+                bounds.south = *prevIter;
+                bounds.north = *iter;
             }
 
             prevIter = iter;
@@ -64,8 +119,8 @@ namespace RoutesOverBingMapsApp
 
         if (interval > largestInterval)
         {
-            bounds.west = *latitudes.rbegin();
-            bounds.east = *latitudes.begin();
+            bounds.south = *latitudes.rbegin();
+            bounds.north = *latitudes.begin();
         }
 
         largestInterval = 0.0;
@@ -80,8 +135,8 @@ namespace RoutesOverBingMapsApp
             if (interval > largestInterval)
             {
                 largestInterval = interval;
-                bounds.south = *prevIter;
-                bounds.north = *iter;
+                bounds.west = *prevIter;
+                bounds.east = *iter;
             }
 
             prevIter = iter;
@@ -94,8 +149,8 @@ namespace RoutesOverBingMapsApp
 
         if (interval > largestInterval)
         {
-            bounds.south = *longitudes.rbegin();
-            bounds.north = *longitudes.begin();
+            bounds.west = *longitudes.rbegin();
+            bounds.east = *longitudes.begin();
         }
 
         /* at this point we have the largest empty view of the earth, so
@@ -105,7 +160,7 @@ namespace RoutesOverBingMapsApp
         BasicGeoposition northwestCorner;
         northwestCorner.Altitude = 0.0;
         northwestCorner.Latitude = bounds.south; // swap south & north
-        northwestCorner.Latitude = bounds.east; // swap west & east
+        northwestCorner.Longitude = bounds.east; // swap west & east
 
         BasicGeoposition southeastCorner;
         southeastCorner.Altitude = 0.0;
@@ -123,66 +178,6 @@ namespace RoutesOverBingMapsApp
         southeastCorner.Longitude += lngDistFromBorder;
 
         return ref new GeoboundingBox(northwestCorner, southeastCorner);
-    }
-
-
-    /// <summary>
-    /// Merges several views (of routes for the same start and end location)
-    /// into one, whose boundaries contain all the others.
-    /// </summary>
-    /// <param name="viewsBounds">The boundaries of the given views.</param>
-    /// <returns>
-    /// A <see cref="Windows::Devices::Geolocation::GeoboundingBox"/> object representing
-    /// the boundaries for one view that contains all the given ones.
-    /// </returns>
-    GeoboundingBox ^MergeViewsBoundaries(const std::vector<GeoboundingBox ^> &viewsBounds)
-    {
-        _ASSERTE(!viewsBounds.empty()); // cannot be empty
-
-        if (viewsBounds.size() == 1)
-            return viewsBounds[0];
-
-        // stores the range of latitude and longitude that the merged view must cover
-        struct {
-            double loLatitude, hiLatitude;
-            double loLongitude, hiLongitude;
-        } bounds;
-
-        bounds.loLatitude = bounds.loLongitude = +180.0;
-        bounds.hiLatitude = bounds.hiLongitude = -180.0;
-
-        /* Because all the views are of routes for the same start and end location,
-           they are expected to be quite close to one each other. Also, the analysis
-           of whether the view is narrower from the opposite side of the earth has
-           been done already. Therefore, the algorithm here simpy produces a bigger
-           box that contains all the views. */
-
-        for (auto view : viewsBounds)
-        {
-            if (view->NorthwestCorner.Latitude > bounds.hiLatitude)
-                bounds.hiLatitude = view->NorthwestCorner.Latitude;
-
-            if (view->NorthwestCorner.Longitude < bounds.loLongitude)
-                bounds.loLongitude = view->NorthwestCorner.Longitude;
-
-            if (view->SoutheastCorner.Latitude < bounds.loLatitude)
-                bounds.loLatitude = view->SoutheastCorner.Latitude;
-
-            if (view->SoutheastCorner.Longitude > bounds.hiLongitude)
-                bounds.hiLongitude = view->SoutheastCorner.Longitude;
-        }
-
-        BasicGeoposition northwest;
-        northwest.Altitude = 0.0;
-        northwest.Latitude = bounds.hiLatitude;
-        northwest.Longitude = bounds.loLongitude;
-
-        BasicGeoposition southeast;
-        southeast.Altitude = 0.0;
-        southeast.Latitude = bounds.loLatitude;
-        southeast.Longitude = bounds.hiLongitude;
-
-        return ref new GeoboundingBox(northwest, southeast);
     }
 
 }// end of namespace RoutesOverBingMapsApp

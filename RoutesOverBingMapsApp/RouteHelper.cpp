@@ -11,7 +11,6 @@
 #include <codecvt>
 #include <cinttypes>
 #include <cpprest/http_client.h>
-#include <cpprest/json.h>
 
 #define format _3fd::utils::FormatArg
 
@@ -209,7 +208,7 @@ namespace RoutesOverBingMapsApp
             {
                 uint8_t b = *iter - 63;
 
-                if (b | 0x20 != 0) // has the bit flag, so not at the group's end:
+                if ((b | 0x20) != 0) // has the bit flag, so not at the group's end:
                 {
                     *iter = b - 0x20; // remove the flag
                 }
@@ -349,7 +348,7 @@ namespace RoutesOverBingMapsApp
 
                 for (auto &entry : steps)
                 {
-                    auto maneuver = std::make_unique<IRouteLegManeuverFWApi>(new RouteLegManeuverFromGoogleApi());
+                    std::unique_ptr<IRouteLegManeuverFWApi> maneuver(new RouteLegManeuverFromGoogleApi());
                     maneuver->ParseFromJSON(entry);
                     m_manuevers.push_back(std::move(maneuver));
                 }
@@ -366,12 +365,12 @@ namespace RoutesOverBingMapsApp
                 oss << "Generic failure when parsing leg JSON response from Google Maps Directions API: " << ex.what();
                 throw core::AppException<std::runtime_error>(oss.str());
             }
-            catch (Platform::String ^ex)
+            catch (Platform::Exception ^ex)
             {
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> transcoder;
                 std::ostringstream oss;
                 oss << "Generic failure when parsing leg JSON response from Google Maps Directions API: "
-                    << transcoder.to_bytes(ex->ToString()->Data());
+                    << transcoder.to_bytes(ex->Message->Data());
 
                 throw core::AppException<std::runtime_error>(oss.str());
             }
@@ -414,16 +413,28 @@ namespace RoutesOverBingMapsApp
 
                 m_boundingBox = ref new GeoboundingBox(northwest, southeast);
 
+                uint32_t totalDurationSecs(0);
+                uint32_t totalDistanceMeters(0);
+
                 web::json::array legs = jsonRouteObj.at(L"legs").as_array();
 
                 for (auto &entry : legs)
                 {
-                    auto leg = std::make_unique<IRouteLegFWApi>(new RouteLegFromGoogleApi());
+                    std::unique_ptr<IRouteLegFWApi> leg(new RouteLegFromGoogleApi());
                     leg->ParseFromJSON(entry);
+
+                    totalDistanceMeters += leg->GetDistanceMeters();
+                    totalDurationSecs += leg->GetDurationSecs();
+
                     m_legs.push_back(std::move(leg));
                 }
 
                 std::wostringstream woss;
+                woss << ToTimeSpanText(totalDurationSecs) << L" (" << ToDistanceText(totalDistanceMeters) << L")\n";
+
+                m_mainInfo = ref new Platform::String(woss.str().c_str());
+                
+                woss.str(L"");
 
                 auto fare = jsonRouteObj[L"fare"];
 
@@ -435,7 +446,9 @@ namespace RoutesOverBingMapsApp
                 for (auto &entry : warnings)
                     woss << L"Warning! " << entry.as_string() << std::endl;
 
-                woss << L"Copyrights: " << jsonRouteObj.at(L"copyrights").as_string() << std::endl;
+                woss << L"Copyrights: " << jsonRouteObj.at(L"copyrights").as_string();
+
+                m_moreInfo = ref new Platform::String(woss.str().c_str());
             }
             catch (web::json::json_exception &ex)
             {
@@ -449,12 +462,12 @@ namespace RoutesOverBingMapsApp
                 oss << "Generic failure when parsing route JSON response from Google Maps Directions API: " << ex.what();
                 throw core::AppException<std::runtime_error>(oss.str());
             }
-            catch (Platform::String ^ex)
+            catch (Platform::Exception ^ex)
             {
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> transcoder;
                 std::ostringstream oss;
                 oss << "Generic failure when parsing route JSON response from Google Maps Directions API: "
-                    << transcoder.to_bytes(ex->ToString()->Data());
+                    << transcoder.to_bytes(ex->Message->Data());
 
                 throw core::AppException<std::runtime_error>(oss.str());
             }
@@ -538,14 +551,10 @@ namespace RoutesOverBingMapsApp
     /// <param name="waypoints">The required waypoints.</param>
     /// <param name="requiredTime">When not null, is the required departure OR arrival time.</param>
     /// <param name="restrictions">The restrictions to apply in the result.</param>
-    /// <returns>
-    /// The routes returned from Google Maps Directions API converted into
-    /// a list of <see cref="Windows::Devices::Geolocation::Geopath"/> objects,
-    /// plus the boundaries of a view that contains all paths.
-    /// </returns>
-    task<ListOfRoutes> GetRoutesFromGoogleAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
-                                                TimeRequirement *requiredTime,
-                                                uint8 restrictions)
+    /// <returns>The routes returned from Google Maps Directions API.</returns>
+    task<RoutesFromWebApi> GetRoutesFromGoogleAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
+                                                    TimeRequirement *requiredTime,
+                                                    uint8 restrictions)
     {
         CALL_STACK_TRACE;
 
@@ -601,10 +610,10 @@ namespace RoutesOverBingMapsApp
             uri->append_query(L"waypoints", ConvertMidWayptsToGoogleFormat(waypoints));
 
             // Constants:
-            uri->append_query(L"mode", L"driving");
+            uri->append_query(L"mode",         L"driving");
             uri->append_query(L"alternatives", L"true");
-            uri->append_query(L"units", L"metric");
-            uri->append_query(L"key", L"AIzaSyC-92iQJwDNoEuq5H3lDGhTzEMKOVlzR3s");
+            uri->append_query(L"units",        L"metric");
+            uri->append_query(L"key",          L"AIzaSyC-92iQJwDNoEuq5H3lDGhTzEMKOVlzR3s");
         }
         catch (std::exception &ex)
         {
@@ -643,8 +652,6 @@ namespace RoutesOverBingMapsApp
 
             try
             {
-                ListOfRoutes result;
-
                 auto status = jsonBody.at(L"status").as_string();
 
                 // first check status:
@@ -664,36 +671,20 @@ namespace RoutesOverBingMapsApp
 
                 web::json::array jsonRoutes = jsonBody.at(L"routes").as_array();
 
-                std::vector<GeoboundingBox ^> viewsBounds;
-                viewsBounds.reserve(jsonRoutes.size());
-
-                std::vector<Geopath ^> routes;
-                routes.reserve(jsonRoutes.size());
+                RoutesFromWebApi result(new std::vector<std::unique_ptr<IRouteFromWebAPI>>());
+                result->reserve(jsonRoutes.size());
 
                 // parse the routes:
                 for (auto &entry : jsonRoutes)
                 {
-                    std::vector<BasicGeoposition> path;
-
-                    auto route = std::make_unique<IRouteFromWebAPI>(new RouteFromGoogleApi());
+                    std::unique_ptr<IRouteFromWebAPI> route(new RouteFromGoogleApi());
                     route->ParseFromJSON(entry);
-                    route->GeneratePath(path);
-
-                    routes.push_back(
-                        ref new Geopath(
-                            ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(path))
-                        )
-                    );
-
-                    viewsBounds.push_back(route->GetBounds());
+                    result->emplace_back(route.release());
                 }
-
-                result.boundaries = MergeViewsBoundaries(viewsBounds);
-                result.routes = ref new Platform::Collections::Vector<Geopath ^>(std::move(routes));
 
                 return result;
             }
-            catch (core::IAppException &ex)
+            catch (core::IAppException &)
             {
                 throw; // just forward exceptions for errors that have already been handled
             }

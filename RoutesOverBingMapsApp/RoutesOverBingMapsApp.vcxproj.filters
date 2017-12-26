@@ -16,9 +16,6 @@
     <ClCompile Include="App.xaml.cpp" />
     <ClCompile Include="MainPage.xaml.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="AppViewModel.cpp">
-      <Filter>Common</Filter>
-    </ClCompile>
     <ClCompile Include="MyWaypointControl.xaml.cpp" />
     <ClCompile Include="TheMap.cpp">
       <Filter>Common</Filter>
@@ -27,14 +24,12 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="AppViewModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h" />
     <ClInclude Include="MainPage.xaml.h" />
-    <ClInclude Include="AppViewModel.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="MyWaypointControl.xaml.h" />
     <ClInclude Include="TheMap.h">
       <Filter>Common</Filter>
@@ -43,6 +38,7 @@
     <ClInclude Include="Utils.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="AppViewModel.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">

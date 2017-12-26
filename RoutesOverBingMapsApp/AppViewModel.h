@@ -138,6 +138,122 @@ namespace RoutesOverBingMapsApp
 
 
     /// <summary>
+    /// Helps picking a distinct color for each route in the map.
+    /// </summary>
+    class RouteColorPicker
+    {
+    private:
+
+        static std::array<Windows::UI::Color, 14> routeColorOptions;
+
+        std::list<Windows::UI::Color> m_remainingOptions;
+
+    public:
+
+        RouteColorPicker();
+
+        RouteColorPicker(const RouteColorPicker &) = delete;
+
+        Windows::UI::Color GetDistinctColor();
+    };
+
+
+    /// <summary>
+    /// Packs information that describe a route.
+    /// </summary>
+    public ref class RouteInfo sealed
+    {
+    private:
+
+        RouteService m_service;
+        Platform::String ^m_mainInfo;
+        Platform::String ^m_moreInfo;
+        Media::SolidColorBrush ^m_bgBrush;
+
+    internal:
+
+        RouteInfo(MapRoute ^route, RouteColorPicker &colorPicker);
+
+        RouteInfo(RouteService service,
+                  Platform::String ^mainInfo,
+                  Platform::String ^moreInfo,
+                  RouteColorPicker &colorPicker);
+
+    public:
+
+        /// <summary>
+        /// Gets the source path to the image that represents
+        /// the service that calculated this route.
+        /// </summary>
+        /// <value>
+        /// The path to the image in the app assets.
+        /// </value>
+        property Platform::String ^ServiceImageSource
+        {
+            Platform::String ^get()
+            {
+                switch (m_service)
+                {
+                case RouteService::Microsoft:
+                    return Platform::StringReference(L"ms-appx:///Assets/microsoft_icon.png");
+                case RouteService::GoogleMaps:
+                    return Platform::StringReference(L"ms-appx:///Assets/google_maps_icon.png");
+                case RouteService::Tomtom:
+                    return Platform::StringReference(L"ms-appx:///Assets/tomtom_icon.png");
+                default:
+                    return Platform::StringReference(L"");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the main information about a route.
+        /// </summary>
+        /// <value>
+        /// The main information about this route, to be shown in the headline.
+        /// </value>
+        property Platform::String ^Headline
+        {
+            Platform::String ^get() { return m_mainInfo; }
+        }
+
+        /// <summary>
+        /// Gets the details.
+        /// </summary>
+        /// <value>
+        /// The details about this route.
+        /// </value>
+        property Platform::String ^Details
+        {
+            Platform::String ^get() { return m_moreInfo; }
+        }
+
+        /// <summary>
+        /// Gets the background appearance to make the control showing this route distinct.
+        /// </summary>
+        /// <value>
+        /// A <see cref="Windows::UI::Xaml::Media::SolidColorBrush"/> derived object
+        /// to set the background appearance of the control displaying this route.
+        /// </value>
+        property Media::SolidColorBrush ^Background
+        {
+            Media::SolidColorBrush ^get() { return m_bgBrush; }
+        }
+
+        /// <summary>
+        /// Gets the color of this route in the map.
+        /// </summary>
+        /// <value>
+        /// The color of this route in the map.
+        /// </value>
+        property Windows::UI::Color LineColor
+        {
+            Windows::UI::Color get() { return m_bgBrush->Color; }
+        }
+    };
+
+
+    /// <summary>
     /// Performs conversion between real number and string.
     /// </summary>
     /// <seealso cref="Data::IValueConverter" />
@@ -166,6 +282,8 @@ namespace RoutesOverBingMapsApp
 
         IObservableVector<Waypoint ^> ^m_waypoints;
 
+        IObservableVector<RouteInfo ^> ^m_routesInfo;
+
         RouteService m_routeService;
         
     public:
@@ -181,6 +299,17 @@ namespace RoutesOverBingMapsApp
         property IObservableVector<Waypoint ^> ^Waypoints
         {
             IObservableVector<Waypoint ^> ^get() { return m_waypoints; }
+        }
+
+        /// <summary>
+        /// Gets the list of information about the calculated routes.
+        /// </summary>
+        /// <value>
+        /// The list of <see cref="RouteInfo"/> objects.
+        /// </value>
+        property IObservableVector<RouteInfo ^> ^Routes
+        {
+            IObservableVector<RouteInfo ^> ^get() { return m_routesInfo; }
         }
 
         /// <summary>

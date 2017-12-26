@@ -30,11 +30,11 @@ void ::RoutesOverBingMapsApp::MainPage::InitializeComponent()
 /// <summary>
 /// Auto generated class for compiled bindings.
 /// </summary>
-class RoutesOverBingMapsApp::MainPage::MainPage_obj12_Bindings 
-    : public ::XamlBindingInfo::ReferenceTypeXamlBindings<::RoutesOverBingMapsApp::Waypoint>
+class RoutesOverBingMapsApp::MainPage::MainPage_obj14_Bindings 
+    : public ::XamlBindingInfo::ReferenceTypeXamlBindings<::RoutesOverBingMapsApp::RouteInfo>
 {
 public:
-    MainPage_obj12_Bindings()
+    MainPage_obj14_Bindings()
     {
     }
 
@@ -42,8 +42,115 @@ public:
     {
         switch(__connectionId)
         {
-            case 13:
-                this->obj13 = safe_cast<::RoutesOverBingMapsApp::MyWaypointControl^>(__target);
+            case 14:
+                this->obj14 = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
+                break;
+            case 15:
+                this->obj15 = safe_cast<::Windows::UI::Xaml::Controls::Image^>(__target);
+                break;
+            case 16:
+                this->obj16 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+                break;
+            case 17:
+                this->obj17 = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
+                break;
+        }
+    }
+
+    void ResetTemplate()
+    {
+    }
+
+    int ProcessBindings(::Windows::UI::Xaml::Controls::ContainerContentChangingEventArgs^ args)
+    {
+        int nextPhase = -1;
+        switch(args->Phase)
+        {
+            case 0:
+                nextPhase = -1;
+                this->SetDataRoot(static_cast<::RoutesOverBingMapsApp::RouteInfo^>(args->Item));
+                if (this->_dataContextChangedToken.Value != 0)
+                {
+                    safe_cast<::Windows::UI::Xaml::FrameworkElement^>(args->ItemContainer->ContentTemplateRoot)->DataContextChanged -= this->_dataContextChangedToken;
+                    this->_dataContextChangedToken.Value = 0;
+                }
+                this->_isInitialized = true;
+                break;
+        }
+        this->Update_((::RoutesOverBingMapsApp::RouteInfo^) args->Item, (1 << args->Phase));
+        return nextPhase;
+    }
+private:
+    // Fields for each control that has bindings.
+    ::Platform::WeakReference obj14;
+    ::Windows::UI::Xaml::Controls::Image^ obj15;
+    ::Windows::UI::Xaml::Controls::TextBlock^ obj16;
+    ::Windows::UI::Xaml::Controls::TextBlock^ obj17;
+
+    // Update methods for each path node used in binding steps.
+    void Update_(::RoutesOverBingMapsApp::RouteInfo^ obj, int phase)
+    {
+        if (obj != nullptr)
+        {
+            if ((phase & (NOT_PHASED | (1 << 0))) != 0)
+            {
+                this->Update_Background(obj->Background, phase);
+                this->Update_ServiceImageSource(obj->ServiceImageSource, phase);
+                this->Update_Headline(obj->Headline, phase);
+                this->Update_Details(obj->Details, phase);
+            }
+        }
+    }
+    void Update_Background(::Windows::UI::Xaml::Media::SolidColorBrush^ obj, int phase)
+    {
+        if((phase & ((1 << 0) | NOT_PHASED )) != 0)
+        {
+            if (this->obj14 != nullptr)
+            {
+                ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_Panel_Background(this->obj14.Resolve<::Windows::UI::Xaml::Controls::StackPanel>(), obj, nullptr);
+            }
+        }
+    }
+    void Update_ServiceImageSource(::Platform::String^ obj, int phase)
+    {
+        if((phase & ((1 << 0) | NOT_PHASED )) != 0)
+        {
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_Image_Source(this->obj15, (::Windows::UI::Xaml::Media::ImageSource^) ::Windows::UI::Xaml::Markup::XamlBindingHelper::ConvertValue(::Windows::UI::Xaml::Media::ImageSource::typeid, obj), nullptr);
+        }
+    }
+    void Update_Headline(::Platform::String^ obj, int phase)
+    {
+        if((phase & ((1 << 0) | NOT_PHASED )) != 0)
+        {
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj16, obj, nullptr);
+        }
+    }
+    void Update_Details(::Platform::String^ obj, int phase)
+    {
+        if((phase & ((1 << 0) | NOT_PHASED )) != 0)
+        {
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_TextBlock_Text(this->obj17, obj, nullptr);
+        }
+    }
+};
+
+/// <summary>
+/// Auto generated class for compiled bindings.
+/// </summary>
+class RoutesOverBingMapsApp::MainPage::MainPage_obj18_Bindings 
+    : public ::XamlBindingInfo::ReferenceTypeXamlBindings<::RoutesOverBingMapsApp::Waypoint>
+{
+public:
+    MainPage_obj18_Bindings()
+    {
+    }
+
+    void Connect(int __connectionId, ::Platform::Object^ __target)
+    {
+        switch(__connectionId)
+        {
+            case 19:
+                this->obj19 = safe_cast<::RoutesOverBingMapsApp::MyWaypointControl^>(__target);
                 break;
         }
     }
@@ -73,7 +180,7 @@ public:
     }
 private:
     // Fields for each control that has bindings.
-    ::RoutesOverBingMapsApp::MyWaypointControl^ obj13;
+    ::RoutesOverBingMapsApp::MyWaypointControl^ obj19;
 
     // Update methods for each path node used in binding steps.
     void Update_(::RoutesOverBingMapsApp::Waypoint^ obj, int phase)
@@ -90,7 +197,7 @@ private:
     {
         if((phase & ((1 << 0) | NOT_PHASED )) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_RoutesOverBingMapsApp_MyWaypointControl_ViewModel(this->obj13, obj, nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_RoutesOverBingMapsApp_MyWaypointControl_ViewModel(this->obj19, obj, nullptr);
         }
     }
 };
@@ -113,11 +220,15 @@ public:
             case 7:
                 this->obj7 = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
                 break;
+            case 8:
+                this->obj8 = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
+                break;
         }
     }
 private:
     // Fields for each control that has bindings.
     ::Windows::UI::Xaml::Controls::ListView^ obj7;
+    ::Windows::UI::Xaml::Controls::ListView^ obj8;
 
     // Update methods for each path node used in binding steps.
     void Update_(::RoutesOverBingMapsApp::MainPage^ obj, int phase)
@@ -137,6 +248,7 @@ private:
             if ((phase & (NOT_PHASED | (1 << 0))) != 0)
             {
                 this->Update_ViewModel_Waypoints(obj->Waypoints, phase);
+                this->Update_ViewModel_Routes(obj->Routes, phase);
             }
         }
     }
@@ -145,6 +257,13 @@ private:
         if((phase & ((1 << 0) | NOT_PHASED )) != 0)
         {
             ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj7, obj, nullptr);
+        }
+    }
+    void Update_ViewModel_Routes(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::RouteInfo^>^ obj, int phase)
+    {
+        if((phase & ((1 << 0) | NOT_PHASED )) != 0)
+        {
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj8, obj, nullptr);
         }
     }
 };
@@ -187,52 +306,64 @@ void ::RoutesOverBingMapsApp::MainPage::Connect(int __connectionId, ::Platform::
         break;
     case 8:
         {
-            this->clearWaypointsButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
-            (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->clearWaypointsButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickClearButton);
+            this->listOfRoutes = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
         }
         break;
     case 9:
+        {
+            this->clearRoutesButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->clearRoutesButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickClearRoutesButton);
+        }
+        break;
+    case 10:
+        {
+            this->clearWaypointsButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->clearWaypointsButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickClearWaypointsButton);
+        }
+        break;
+    case 11:
         {
             this->removeWaypointButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->removeWaypointButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickRemoveButton);
         }
         break;
-    case 10:
+    case 12:
         {
             this->addWaypointButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->addWaypointButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickAddWaypointButton);
         }
         break;
-    case 11:
+    case 13:
         {
             this->findRouteButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarButton^>(this->findRouteButton))->Click += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnClickFindRouteButton);
         }
         break;
-    case 14:
+    case 20:
         {
             this->serviceTextBlock = safe_cast<::Windows::UI::Xaml::Controls::TextBlock^>(__target);
         }
         break;
-    case 15:
+    case 21:
         {
             this->useMicrosoftButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useMicrosoftButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseMicrosoftButton);
         }
         break;
-    case 16:
+    case 22:
         {
             this->useGoogleButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useGoogleButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseGoogleButton);
         }
         break;
-    case 17:
+    case 23:
         {
             this->useTomtomButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useTomtomButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
@@ -258,14 +389,24 @@ void ::RoutesOverBingMapsApp::MainPage::Connect(int __connectionId, ::Platform::
                 element1->Loading += ref new ::Windows::Foundation::TypedEventHandler<::Windows::UI::Xaml::FrameworkElement^, ::Platform::Object^>(bindings, &::XamlBindingInfo::XamlBindings::Loading);
             }
             break;
-        case 12:
+        case 14:
             {
-                ::Windows::UI::Xaml::Controls::StackPanel^ element12 = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
-                MainPage_obj12_Bindings* objBindings = new MainPage_obj12_Bindings();
-                objBindings->SetDataRoot(element12->DataContext);
+                ::Windows::UI::Xaml::Controls::StackPanel^ element14 = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
+                MainPage_obj14_Bindings* objBindings = new MainPage_obj14_Bindings();
+                objBindings->SetDataRoot(element14->DataContext);
                 bindings = ref new ::XamlBindingInfo::XamlBindings(objBindings);
-                bindings->SubscribeForDataContextChanged(element12);
-                ::Windows::UI::Xaml::DataTemplate::SetExtensionInstance(element12, bindings);
+                bindings->SubscribeForDataContextChanged(element14);
+                ::Windows::UI::Xaml::DataTemplate::SetExtensionInstance(element14, bindings);
+            }
+            break;
+        case 18:
+            {
+                ::Windows::UI::Xaml::Controls::StackPanel^ element18 = safe_cast<::Windows::UI::Xaml::Controls::StackPanel^>(__target);
+                MainPage_obj18_Bindings* objBindings = new MainPage_obj18_Bindings();
+                objBindings->SetDataRoot(element18->DataContext);
+                bindings = ref new ::XamlBindingInfo::XamlBindings(objBindings);
+                bindings->SubscribeForDataContextChanged(element18);
+                ::Windows::UI::Xaml::DataTemplate::SetExtensionInstance(element18, bindings);
             }
             break;
     }

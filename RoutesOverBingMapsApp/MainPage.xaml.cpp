@@ -5,10 +5,14 @@
 
 #include "pch.h"
 #include "MainPage.xaml.h"
+#include "Utils.h"
 #include "TheMap.h"
+#include "RouteHelper.h"
+#include <3FD\runtime.h>
 #include <3FD\utils_winrt.h>
 
 
+using namespace _3fd;
 using namespace RoutesOverBingMapsApp;
 
 using namespace Windows::UI::Xaml;
@@ -36,15 +40,6 @@ MainPage::MainPage()
 
     TheMap::Initialize(mapControl);
 }
-
-
-// default parameters for exception notification and logging
-static const _3fd::utils::UwpXaml::ExNotifAndLogParams exHndParams
-{
-    Platform::StringReference(L"Application error!\n"),
-    Platform::StringReference(L"Cancel"),
-    _3fd::core::Logger::PRIO_ERROR
-};
 
 
 /// <summary>
@@ -151,7 +146,7 @@ void MainPage::OnClickRemoveButton(Platform::Object ^sender, Windows::UI::Xaml::
 /// </summary>
 /// <param name="sender">The sender (control).</param>
 /// <param name="evArgs">The event arguments.</param>
-void MainPage::OnClickClearButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+void MainPage::OnClickClearWaypointsButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
     // clear list:
     ViewModel->Waypoints->Clear();
@@ -167,12 +162,47 @@ void MainPage::OnClickClearButton(Platform::Object ^sender, Windows::UI::Xaml::R
 
 
 /// <summary>
+/// Called when the button to clear routes is clicked.
+/// </summary>
+/// <param name="sender">The sender (control).</param>
+/// <param name="evArgs">The event arguments.</param>
+void MainPage::OnClickClearRoutesButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+{
+    mapControl->Routes->Clear();
+    ViewModel->Routes->Clear();
+    useMicrosoftButton->IsEnabled = true;
+    useGoogleButton->IsEnabled = true;
+    useTomtomButton->IsEnabled = true;
+    listOfRoutes->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+    listOfWaypoints->Visibility = Windows::UI::Xaml::Visibility::Visible;
+    clearRoutesButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+    clearWaypointsButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+    removeWaypointButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+    addWaypointButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+    findRouteButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+}
+
+
+// default parameters for exception notification and logging
+static const _3fd::utils::UwpXaml::ExNotifAndLogParams exHndParams
+{
+    Platform::StringReference(L"Application error!\n"),
+    Platform::StringReference(L"Cancel"),
+    _3fd::core::Logger::PRIO_ERROR
+};
+
+
+/// <summary>
 /// Called when the button to request routes (from web services) is clicked.
 /// </summary>
 /// <param name="sender">The sender ("request route" button).</param>
 /// <param name="evArgs">The event arguments.</param>
 void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
+    core::FrameworkInstance fffd("RoutesOverBingMapsApp");
+
+    CALL_STACK_TRACE;
+
     uint32 idx(0);
 
     // iterate through the list of waypoints and get rid of the unverified ones:
@@ -192,5 +222,80 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
         }
     }
 
-    // TO DO
+    // Find routes with the chosen service:
+
+    waitingRing->IsActive = true;
+    waitingRing->Visibility = Windows::UI::Xaml::Visibility::Visible;
+
+    std::vector<task<GeoboundingBox ^>> tasks;
+    tasks.reserve(3);
+
+    std::shared_ptr<RouteColorPicker> colorPicker(new RouteColorPicker());
+
+    if (ViewModel->Service == RouteService::Microsoft)
+    {
+        auto thisTask = GetRoutesFromMicrosoftAsync(
+            ViewModel->Waypoints->GetView(),
+            MapRouteOptimization::Time,
+            static_cast<uint8> (RouteRestriction::AvoidDirt | RouteRestriction::AvoidFerries)
+        )
+        .then([this, colorPicker](IVector<MapRoute ^> ^routes)
+        {
+            for (auto route : routes)
+            {
+                auto routeInfo = ref new RouteInfo(route, *colorPicker);
+                auto routeView = ref new MapRouteView(route);
+                routeView->RouteColor = routeInfo->LineColor;
+                mapControl->Routes->Append(routeView);
+                ViewModel->Routes->Append(routeInfo);
+            }
+
+            return MergeViewsBoundaries<MapRoute ^>(
+                begin(routes),
+                end(routes),
+                [](MapRoute ^entry) { return entry->BoundingBox; }
+            );
+        });
+
+        tasks.push_back(thisTask);
+    }
+    
+    if (ViewModel->Service == RouteService::GoogleMaps)
+    {
+
+    }
+
+    if (ViewModel->Service == RouteService::Tomtom)
+    {
+
+    }
+
+    // wait for all services to respond:
+    when_all(tasks.begin(), tasks.end()).then([this](task<std::vector<GeoboundingBox ^>> priorTasks)
+    {
+        std::vector<GeoboundingBox ^> bounds;
+
+        if (utils::UwpXaml::GetTaskRetAndHndEx(priorTasks, bounds, exHndParams) == STATUS_OKAY)
+        {
+            Thickness borders{ 80, 80, 80, 80 };
+
+            GeoboundingBox ^mergedBounds = MergeViewsBoundaries(bounds.begin(), bounds.end());
+            
+            mapControl->TrySetViewBoundsAsync(mergedBounds, borders, MapAnimationKind::Linear);
+
+            useMicrosoftButton->IsEnabled = false;
+            useGoogleButton->IsEnabled = false;
+            useTomtomButton->IsEnabled = false;
+            listOfRoutes->Visibility = Windows::UI::Xaml::Visibility::Visible;
+            listOfWaypoints->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+            clearRoutesButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
+            clearWaypointsButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+            removeWaypointButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+            addWaypointButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+            findRouteButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+        }
+
+        waitingRing->IsActive = false;
+        waitingRing->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
+    });
 }

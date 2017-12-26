@@ -2,6 +2,8 @@
 
 #include "AppViewModel.h"
 #include <3FD\preprocessing.h>
+#include <cpprest/json.h>
+#include <memory>
 #include <vector>
 #include <ctime>
 
@@ -36,24 +38,6 @@ namespace RoutesOverBingMapsApp
         time_t epochTime;
         TimeType type;
     };
-
-    /// <summary>
-    /// Holds the result for a web request for routes.
-    /// </summary>
-    struct ListOfRoutes
-    {
-        IVector<Geopath ^> ^routes;
-        GeoboundingBox ^boundaries;
-    };
-
-
-    task<IVector<MapRoute ^> ^> GetRoutesFromMicrosoftAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
-                                                            MapRouteOptimization optimization,
-                                                            uint8 restrictions);
-
-    task<ListOfRoutes> GetRoutesFromGoogleAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
-                                                TimeRequirement *requiredTime,
-                                                uint8 restrictions);
 
 
     /// <summary>
@@ -107,6 +91,10 @@ namespace RoutesOverBingMapsApp
 
         virtual void ParseFromJSON(web::json::value &jsonLegObj) = 0;
 
+        uint32_t GetDurationSecs() const { return m_durationSecs; }
+
+        uint32_t GetDistanceMeters() const { return m_distanceMeters; }
+
         /// <summary>
         /// Appends the geographic positions that compose this route leg to the route path.
         /// </summary>
@@ -135,12 +123,20 @@ namespace RoutesOverBingMapsApp
         std::vector<std::unique_ptr<IRouteLegFWApi>> m_legs;
 
         GeoboundingBox ^m_boundingBox;
+        Platform::String ^m_mainInfo;
+        Platform::String ^m_moreInfo;
 
     public:
+
+        virtual IRouteFromWebAPI::~IRouteFromWebAPI() {}
 
         virtual void ParseFromJSON(web::json::value &jsonRouteObj) = 0;
 
         GeoboundingBox ^GetBounds() const { return m_boundingBox; }
+
+        Platform::String ^GetMainInfo() const { return m_mainInfo; }
+
+        Platform::String ^GetMoreInfo() const { return m_moreInfo; }
 
         /// <summary>
         /// Generates the path.
@@ -152,5 +148,17 @@ namespace RoutesOverBingMapsApp
                 leg->AppendToPath(geoPath);
         }
     };
+
+
+    typedef std::shared_ptr<std::vector<std::unique_ptr<IRouteFromWebAPI>>> RoutesFromWebApi;
+
+
+    task<IVector<MapRoute ^> ^> GetRoutesFromMicrosoftAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
+                                                            MapRouteOptimization optimization,
+                                                            uint8 restrictions);
+
+    task<RoutesFromWebApi> GetRoutesFromGoogleAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
+                                                    TimeRequirement *requiredTime,
+                                                    uint8 restrictions);
 
 }// end of namespace RoutesOverBingMapsApp

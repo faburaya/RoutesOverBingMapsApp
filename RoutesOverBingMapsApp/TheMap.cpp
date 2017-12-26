@@ -51,7 +51,6 @@ namespace RoutesOverBingMapsApp
     /// <param name="mapControl">The map control.</param>
     TheMap::TheMap(MapControl ^mapControl)
         : m_mapControl(mapControl)
-        , m_itineraryLine(ref new MapPolyline())
     {
     }
 
@@ -203,31 +202,32 @@ namespace RoutesOverBingMapsApp
         if (positions->empty())
             return;
 
-        concurrency::create_task(
-            m_mapControl->TrySetViewBoundsAsync(CalculateViewBoundaries(*positions),
-                                                nullptr,
-                                                MapAnimationKind::Linear)
-        )
-        .then([this, positions](bool success)
+        m_mapControl->TrySetViewBoundsAsync(CalculateViewBoundaries(*positions),
+                                            nullptr,
+                                            MapAnimationKind::Linear);
+
+        if (positions->size() < 2)
+            return;
+
+        if (m_itineraryLine == nullptr)
         {
-            if (positions->size() < 2)
-                return;
-
-            if (m_itineraryLine == nullptr)
-            {
-                m_itineraryLine = ref new MapPolyline();
-
-                m_itineraryLine->StrokeColor = Windows::UI::Colors::Black;
-                m_itineraryLine->StrokeThickness = 2;
-                m_itineraryLine->StrokeDashed = true;
-
-                m_mapControl->MapElements->Append(m_itineraryLine);
-            }
+            m_itineraryLine = ref new MapPolyline();
+            m_itineraryLine->StrokeColor = Windows::UI::Colors::Black;
+            m_itineraryLine->StrokeThickness = 2;
+            m_itineraryLine->StrokeDashed = true;
 
             m_itineraryLine->Path = ref new Geopath(
                 ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(*positions))
             );
-        });
+
+            m_mapControl->MapElements->Append(m_itineraryLine);
+        }
+        else
+        {
+            m_itineraryLine->Path = ref new Geopath(
+                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(*positions))
+            );
+        }
     }
 
 
