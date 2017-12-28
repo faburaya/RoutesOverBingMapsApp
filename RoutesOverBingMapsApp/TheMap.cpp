@@ -52,6 +52,7 @@ namespace RoutesOverBingMapsApp
     TheMap::TheMap(MapControl ^mapControl)
         : m_mapControl(mapControl)
     {
+        m_typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
     }
 
 
@@ -76,10 +77,8 @@ namespace RoutesOverBingMapsApp
         {
             MapElement ^element = m_mapControl->MapElements->GetAt(vecIdx);
 
-            static auto typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
-
             // got a polyline? skip it
-            if (element->GetType()->FullName->Equals(typePolylineFName))
+            if (element->GetType()->FullName->Equals(m_typePolylineFName))
             {
                 --vecIdx;
                 continue;
@@ -107,6 +106,26 @@ namespace RoutesOverBingMapsApp
             *whereIdx = vecIdx + 1;
 
         return false;
+    }
+
+
+    /// <summary>
+    /// Displays a new route using a polyline.
+    /// </summary>
+    /// <param name="path">The path of geo locations for the polyline.</param>
+    /// <param name="color">The chosen route color.</param>
+    void TheMap::DisplayRouteAsPolyline(std::vector<BasicGeoposition> &&path, Windows::UI::Color color)
+    {
+        auto polyline = ref new MapPolyline();
+        polyline->StrokeColor = color;
+        polyline->StrokeThickness = 7;
+        polyline->ZIndex = 1;
+
+        polyline->Path = ref new Geopath(
+            ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(path))
+        );
+
+        m_mapControl->MapElements->Append(polyline);
     }
 
 
@@ -165,12 +184,47 @@ namespace RoutesOverBingMapsApp
 
 
     /// <summary>
-    /// Clear all elements from the app map.
+    /// Clear all waypoints from the app map.
     /// </summary>
     void TheMap::ClearWaypoints()
     {
+        /* This will also remove polylines for routes and this is fine because
+           of the way this app works. That is: by the time you want to remove the
+           waypoints, the routes have already been cleared by a previous command.*/
         m_mapControl->MapElements->Clear();
         m_itineraryLine = nullptr;
+    }
+
+
+    /// <summary>
+    /// Clear all polylines for routes in the app map.
+    /// </summary>
+    void TheMap::ClearRoutesPolylines()
+    {
+        std::vector<MapElement ^> temp;
+        temp.reserve(m_mapControl->MapElements->Size);
+
+        for (auto entry : m_mapControl->MapElements)
+        {
+            auto element = static_cast<MapElement ^> (entry);
+
+            // got a polyline? skip it
+            if (element->GetType()->FullName->Equals(m_typePolylineFName))
+                continue;
+
+            temp.push_back(element);
+        }
+
+        m_mapControl->MapElements->Clear(); // clear all
+
+        // restore the waypoints:
+        for (auto entry : temp)
+            m_mapControl->MapElements->Append(entry);
+
+        // restore the itinerary line:
+        if (m_itineraryLine != nullptr)
+            m_mapControl->MapElements->Append(m_itineraryLine);
+
     }
 
 
@@ -179,53 +233,52 @@ namespace RoutesOverBingMapsApp
     /// </summary>
     void TheMap::UpdateItineraryLine()
     {
-        std::shared_ptr<std::vector<BasicGeoposition>> positions(new std::vector<BasicGeoposition>());
-
-        positions->reserve(m_mapControl->MapElements->Size);
+        std::vector<BasicGeoposition> positions;
+        positions.reserve(m_mapControl->MapElements->Size);
 
         for (auto entry : m_mapControl->MapElements)
         {
-            static auto typePolylineFName = (ref new MapPolyline)->GetType()->FullName;
-
             auto element = static_cast<MapElement ^> (entry);
 
             // got a polyline? skip it
-            if (element->GetType()->FullName->Equals(typePolylineFName))
+            if (element->GetType()->FullName->Equals(m_typePolylineFName))
                 continue;
 
-            MapIcon ^pin = safe_cast<MapIcon ^> (element);
-
-            positions->push_back(pin->Location->Position);
+            positions.push_back(safe_cast<MapIcon ^> (element)->Location->Position);
         }
 
         // no remaining pin's?
-        if (positions->empty())
+        if (positions.empty())
             return;
 
-        m_mapControl->TrySetViewBoundsAsync(CalculateViewBoundaries(*positions),
+        m_mapControl->TrySetViewBoundsAsync(CalculateViewBoundaries(positions),
                                             nullptr,
                                             MapAnimationKind::Linear);
 
-        if (positions->size() < 2)
+        if (positions.size() < 2)
             return;
 
         if (m_itineraryLine == nullptr)
         {
+            // itinerary line has been erased, so re-create it:
             m_itineraryLine = ref new MapPolyline();
             m_itineraryLine->StrokeColor = Windows::UI::Colors::Black;
             m_itineraryLine->StrokeThickness = 2;
             m_itineraryLine->StrokeDashed = true;
+            m_itineraryLine->ZIndex = -1;
 
+            // the polyline must have its path set before entering the list of map elements:
             m_itineraryLine->Path = ref new Geopath(
-                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(*positions))
+                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(positions))
             );
 
             m_mapControl->MapElements->Append(m_itineraryLine);
         }
         else
         {
+            // itinerary line already set, so just update its path:
             m_itineraryLine->Path = ref new Geopath(
-                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(*positions))
+                ref new Platform::Collections::Vector<BasicGeoposition, BGeoPosComparator>(std::move(positions))
             );
         }
     }

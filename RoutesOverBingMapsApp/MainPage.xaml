@@ -58,8 +58,6 @@
                     VerticalAlignment="Center"/>
 
         <Canvas>
-            <ProgressRing Name="waitingRing" Visibility="Collapsed"/>
-
             <Grid Canvas.Left="16" Canvas.Top="16">
                 <StackPanel Orientation="Vertical">
                     <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
@@ -67,19 +65,28 @@
                             <TextBlock Name="serviceTextBlock"
                                        Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
                         </CommandBar.Content>
-                        <AppBarToggleButton Name="useMicrosoftButton" Checked="OnCheckUseMicrosoftButton">
+                        <AppBarToggleButton Name="useMicrosoftButton"
+                                            Checked="OnCheckUseMicrosoftButton">
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/microsoft_icon.png"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton Name="useGoogleButton" Checked="OnCheckUseGoogleButton">
+                        <AppBarToggleButton Name="useGoogleButton"
+                                            Checked="OnCheckUseGoogleButton">
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/google_maps_icon.png"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton Name="useTomtomButton" Checked="OnCheckUseTomtomButton">
+                        <AppBarToggleButton Name="useTomtomButton"
+                                            Checked="OnCheckUseTomtomButton">
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/tomtom_icon.png"/>
+                            </AppBarToggleButton.Content>
+                        </AppBarToggleButton>
+                        <AppBarToggleButton Name="useAllServicesButton"
+                                            Checked="OnCheckUseAllServicesButton">
+                            <AppBarToggleButton.Content>
+                                <TextBlock Text="All" HorizontalAlignment="Center"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
                     </CommandBar>
@@ -98,6 +105,11 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+
+                    <ProgressRing Name="waitingRing"
+                                  Visibility="Collapsed"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
 
                     <ListView Name="listOfRoutes"
                               ItemsSource="{x:Bind ViewModel.Routes}"
@@ -124,7 +136,7 @@
                     </ListView>
 
                     <CommandBar DefaultLabelPosition="Right" Opacity="0.80">
-
+                        
                         <AppBarButton Name="clearRoutesButton"
                                       Icon="Clear"
                                       Click="OnClickClearRoutesButton"

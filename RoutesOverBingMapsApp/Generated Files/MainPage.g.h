@@ -31,8 +31,8 @@ namespace Windows {
         namespace Xaml {
             namespace Controls {
                 ref class SymbolIcon;
-                ref class ProgressRing;
                 ref class ListView;
+                ref class ProgressRing;
                 ref class AppBarButton;
                 ref class TextBlock;
                 ref class AppBarToggleButton;
@@ -64,8 +64,8 @@ namespace RoutesOverBingMapsApp
         private: ::Windows::UI::Xaml::VisualState^ narrowState;
         private: ::Windows::UI::Xaml::Controls::Maps::MapControl^ mapControl;
         private: ::Windows::UI::Xaml::Controls::SymbolIcon^ crosshairSymbol;
-        private: ::Windows::UI::Xaml::Controls::ProgressRing^ waitingRing;
         private: ::Windows::UI::Xaml::Controls::ListView^ listOfWaypoints;
+        private: ::Windows::UI::Xaml::Controls::ProgressRing^ waitingRing;
         private: ::Windows::UI::Xaml::Controls::ListView^ listOfRoutes;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ clearRoutesButton;
         private: ::Windows::UI::Xaml::Controls::AppBarButton^ clearWaypointsButton;
@@ -76,6 +76,7 @@ namespace RoutesOverBingMapsApp
         private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useMicrosoftButton;
         private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useGoogleButton;
         private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useTomtomButton;
+        private: ::Windows::UI::Xaml::Controls::AppBarToggleButton^ useAllServicesButton;
     };
 }
 

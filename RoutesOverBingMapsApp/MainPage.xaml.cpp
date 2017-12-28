@@ -53,6 +53,7 @@ void MainPage::OnCheckUseMicrosoftButton(Platform::Object ^sender, Windows::UI::
     serviceTextBlock->Text = Platform::StringReference(L"Microsoft");
     useGoogleButton->IsChecked = false;
     useTomtomButton->IsChecked = false;
+    useAllServicesButton->IsChecked = false;
 }
 
 
@@ -67,6 +68,7 @@ void MainPage::OnCheckUseGoogleButton(Platform::Object ^sender, Windows::UI::Xam
     serviceTextBlock->Text = Platform::StringReference(L"Google Maps");
     useMicrosoftButton->IsChecked = false;
     useTomtomButton->IsChecked = false;
+    useAllServicesButton->IsChecked = false;
 }
 
 
@@ -81,6 +83,22 @@ void MainPage::OnCheckUseTomtomButton(Platform::Object ^sender, Windows::UI::Xam
     serviceTextBlock->Text = Platform::StringReference(L"Tomtom");
     useMicrosoftButton->IsChecked = false;
     useGoogleButton->IsChecked = false;
+    useAllServicesButton->IsChecked = false;
+}
+
+
+/// <summary>
+/// Called when the (toggle)button to choose all route services is checked.
+/// </summary>
+/// <param name="sender">The sender (control).</param>
+/// <param name="evArgs">The event arguments.</param>
+void MainPage::OnCheckUseAllServicesButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
+{
+    ViewModel->Service = RouteService::All;
+    serviceTextBlock->Text = Platform::StringReference(L"All of them");
+    useMicrosoftButton->IsChecked = false;
+    useGoogleButton->IsChecked = false;
+    useTomtomButton->IsChecked = false;
 }
 
 
@@ -168,11 +186,16 @@ void MainPage::OnClickClearWaypointsButton(Platform::Object ^sender, Windows::UI
 /// <param name="evArgs">The event arguments.</param>
 void MainPage::OnClickClearRoutesButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
+    TheMap::GetInstance().ClearRoutesPolylines();
+
     mapControl->Routes->Clear();
     ViewModel->Routes->Clear();
+
     useMicrosoftButton->IsEnabled = true;
     useGoogleButton->IsEnabled = true;
     useTomtomButton->IsEnabled = true;
+    useAllServicesButton->IsEnabled = true;
+
     listOfRoutes->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
     listOfWaypoints->Visibility = Windows::UI::Xaml::Visibility::Visible;
     clearRoutesButton->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
@@ -231,8 +254,11 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
     tasks.reserve(3);
 
     std::shared_ptr<RouteColorPicker> colorPicker(new RouteColorPicker());
-
-    if (ViewModel->Service == RouteService::Microsoft)
+    
+    ////////////////////
+    // Microsoft:
+    
+    if (ViewModel->Service == RouteService::Microsoft || ViewModel->Service == RouteService::All)
     {
         auto thisTask = GetRoutesFromMicrosoftAsync(
             ViewModel->Waypoints->GetView(),
@@ -259,13 +285,49 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
 
         tasks.push_back(thisTask);
     }
-    
-    if (ViewModel->Service == RouteService::GoogleMaps)
-    {
 
+    ////////////////////
+    // Google Maps:
+    
+    if (ViewModel->Service == RouteService::GoogleMaps || ViewModel->Service == RouteService::All)
+    {
+        auto thisTask = GetRoutesFromGoogleAsync(
+            ViewModel->Waypoints->GetView(),
+            nullptr,
+            static_cast<uint8> (RouteRestriction::AvoidFerries)
+        )
+        .then([this, colorPicker](RoutesFromWebApi results)
+        {
+            std::vector<GeoboundingBox ^> bounds;
+            bounds.reserve(results->size());
+
+            for (auto &route : *results)
+            {
+                std::vector<BasicGeoposition> path;
+                route->GeneratePath(path);
+
+                auto routeInfo = ref new RouteInfo(RouteService::GoogleMaps,
+                                                   route->GetMainInfo(),
+                                                   route->GetMoreInfo(),
+                                                   *colorPicker);
+
+                TheMap::GetInstance().DisplayRouteAsPolyline(std::move(path), routeInfo->LineColor);
+
+                bounds.push_back(route->GetBounds());
+                ViewModel->Routes->Append(routeInfo);
+            }
+
+            return MergeViewsBoundaries(bounds.begin(), bounds.end());
+
+        }, task_continuation_context::use_current());
+
+        tasks.push_back(thisTask);
     }
 
-    if (ViewModel->Service == RouteService::Tomtom)
+    ////////////////////
+    // TomTom:
+
+    if (ViewModel->Service == RouteService::Tomtom || ViewModel->Service == RouteService::All)
     {
 
     }
@@ -286,6 +348,8 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
             useMicrosoftButton->IsEnabled = false;
             useGoogleButton->IsEnabled = false;
             useTomtomButton->IsEnabled = false;
+            useAllServicesButton->IsEnabled = false;
+
             listOfRoutes->Visibility = Windows::UI::Xaml::Visibility::Visible;
             listOfWaypoints->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
             clearRoutesButton->Visibility = Windows::UI::Xaml::Visibility::Visible;
@@ -297,5 +361,6 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
 
         waitingRing->IsActive = false;
         waitingRing->Visibility = Windows::UI::Xaml::Visibility::Collapsed;
-    });
+    
+    }, task_continuation_context::use_current());
 }

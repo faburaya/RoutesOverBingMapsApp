@@ -26,6 +26,9 @@ namespace RoutesOverBingMapsApp
 
         MapPolyline ^m_itineraryLine;
 
+        Platform::String ^m_typePolylineFName;
+
+
         TheMap(MapControl ^mapControl);
 
         bool FindWaypoint(int wayptOrder, int *whereIdx) const;
@@ -40,11 +43,15 @@ namespace RoutesOverBingMapsApp
 
         static void Finalize();
 
+        void DisplayRouteAsPolyline(std::vector<BasicGeoposition> &&path, Windows::UI::Color color);
+
         void DisplayWaypointLocation(int wayptOrder, BasicGeoposition location);
 
         void RemoveWaypoint(int wayptOrder);
 
         void ClearWaypoints();
+
+        void ClearRoutesPolylines();
 
         void GetCenterPosition(double &latitude, double &longitude);
     };

@@ -208,7 +208,7 @@ namespace RoutesOverBingMapsApp
             {
                 uint8_t b = *iter - 63;
 
-                if ((b | 0x20) != 0) // has the bit flag, so not at the group's end:
+                if ((b & 0x20) != 0) // has the bit flag, so not at the group's end:
                 {
                     *iter = b - 0x20; // remove the flag
                 }
@@ -238,9 +238,9 @@ namespace RoutesOverBingMapsApp
                 // the first position is absolute and the others are offsets:
                 if (idx != 0)
                 {
-                    auto &firstPos = path[0];
-                    position.Latitude += firstPos.Latitude;
-                    position.Longitude += firstPos.Longitude;
+                    auto &prevPos = path[(idx / 2) - 1];
+                    position.Latitude += prevPos.Latitude;
+                    position.Longitude += prevPos.Longitude;
                 }
             }
         }
@@ -281,6 +281,10 @@ namespace RoutesOverBingMapsApp
                     );
 
                 DecodeFromPolyline(polyline, m_path);
+            }
+            catch (core::IAppException &)
+            {
+                throw; // just forward exceptions for errors that have already been handled
             }
             catch (web::json::json_exception &ex)
             {
@@ -329,12 +333,12 @@ namespace RoutesOverBingMapsApp
                 auto node = jsonLegObj[L"distance"];
 
                 if (!node.is_null())
-                    m_distanceMeters = node.as_integer();
+                    m_distanceMeters = node.at(L"value").as_integer();
 
                 node = jsonLegObj[L"duration"];
 
                 if (!node.is_null())
-                    m_durationSecs = node.as_integer();
+                    m_durationSecs = node.at(L"value").as_integer();
 
                 node = jsonLegObj.at(L"start_location");
                 m_startPosition.Latitude = node.at(L"lat").as_double();
@@ -346,12 +350,18 @@ namespace RoutesOverBingMapsApp
 
                 web::json::array steps = jsonLegObj.at(L"steps").as_array();
 
+                m_manuevers.reserve(steps.size());
+
                 for (auto &entry : steps)
                 {
                     std::unique_ptr<IRouteLegManeuverFWApi> maneuver(new RouteLegManeuverFromGoogleApi());
                     maneuver->ParseFromJSON(entry);
                     m_manuevers.push_back(std::move(maneuver));
                 }
+            }
+            catch (core::IAppException &)
+            {
+                throw; // just forward exceptions for errors that have already been handled
             }
             catch (web::json::json_exception &ex)
             {
@@ -418,6 +428,8 @@ namespace RoutesOverBingMapsApp
 
                 web::json::array legs = jsonRouteObj.at(L"legs").as_array();
 
+                m_legs.reserve(legs.size());
+
                 for (auto &entry : legs)
                 {
                     std::unique_ptr<IRouteLegFWApi> leg(new RouteLegFromGoogleApi());
@@ -430,7 +442,7 @@ namespace RoutesOverBingMapsApp
                 }
 
                 std::wostringstream woss;
-                woss << ToTimeSpanText(totalDurationSecs) << L" (" << ToDistanceText(totalDistanceMeters) << L")\n";
+                woss << ToTimeSpanText(totalDurationSecs) << L" (" << ToDistanceText(totalDistanceMeters) << L")";
 
                 m_mainInfo = ref new Platform::String(woss.str().c_str());
                 
@@ -439,7 +451,7 @@ namespace RoutesOverBingMapsApp
                 auto fare = jsonRouteObj[L"fare"];
 
                 if (!fare.is_null())
-                    woss << "Fare: " << fare.at(L"text").as_string() << std::endl;
+                    woss << L"Fare: " << fare.at(L"text").as_string() << std::endl;
 
                 web::json::array warnings = jsonRouteObj.at(L"warnings").as_array();
 
@@ -449,6 +461,10 @@ namespace RoutesOverBingMapsApp
                 woss << L"Copyrights: " << jsonRouteObj.at(L"copyrights").as_string();
 
                 m_moreInfo = ref new Platform::String(woss.str().c_str());
+            }
+            catch (core::IAppException &)
+            {
+                throw; // just forward exceptions for errors that have already been handled
             }
             catch (web::json::json_exception &ex)
             {
@@ -527,6 +543,8 @@ namespace RoutesOverBingMapsApp
     /// <returns>Values converted to a string.</returns>
     static std::wstring ConvertMidWayptsToGoogleFormat(Collections::IVectorView<Waypoint ^> ^waypoints)
     {
+        _ASSERTE(waypoints->Size > 2);
+
         std::wostringstream woss;
 
         // Waypoints (beyond origin and destination):
@@ -583,7 +601,7 @@ namespace RoutesOverBingMapsApp
 
             // Destination:
             BasicGeoposition &destination = waypoints->GetAt(waypoints->Size - 1)->GetLocation().coordinates;
-            utils::SerializeTo(buffer, origin.Latitude, L",", origin.Longitude);
+            utils::SerializeTo(buffer, destination.Latitude, L",", destination.Longitude);
             uri->append_query(L"destination", buffer.data());
 
             // Time requirement:
@@ -607,7 +625,8 @@ namespace RoutesOverBingMapsApp
             }
 
             // Waypoints between origin and destination:
-            uri->append_query(L"waypoints", ConvertMidWayptsToGoogleFormat(waypoints));
+            if (waypoints->Size > 2)
+                uri->append_query(L"waypoints", ConvertMidWayptsToGoogleFormat(waypoints));
 
             // Constants:
             uri->append_query(L"mode",         L"driving");
@@ -632,11 +651,9 @@ namespace RoutesOverBingMapsApp
 
             if (response.status_code() != http::status_codes::OK)
             {
-                std::wstring_convert<std::codecvt_utf8<wchar_t>> transcoder;
-
                 throw core::AppException<std::runtime_error>(
                     "HTTP request to Google Maps Directions API has failed!",
-                    transcoder.to_bytes(response.reason_phrase())
+                    utility::conversions::to_utf8string(response.reason_phrase())
                 );
             }
 

@@ -217,8 +217,8 @@ public:
     {
         switch(__connectionId)
         {
-            case 7:
-                this->obj7 = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
+            case 6:
+                this->obj6 = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
                 break;
             case 8:
                 this->obj8 = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
@@ -227,7 +227,7 @@ public:
     }
 private:
     // Fields for each control that has bindings.
-    ::Windows::UI::Xaml::Controls::ListView^ obj7;
+    ::Windows::UI::Xaml::Controls::ListView^ obj6;
     ::Windows::UI::Xaml::Controls::ListView^ obj8;
 
     // Update methods for each path node used in binding steps.
@@ -256,7 +256,7 @@ private:
     {
         if((phase & ((1 << 0) | NOT_PHASED )) != 0)
         {
-            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj7, obj, nullptr);
+            ::XamlBindingInfo::XamlBindingSetters::Set_Windows_UI_Xaml_Controls_ItemsControl_ItemsSource(this->obj6, obj, nullptr);
         }
     }
     void Update_ViewModel_Routes(::Windows::Foundation::Collections::IObservableVector<::RoutesOverBingMapsApp::RouteInfo^>^ obj, int phase)
@@ -294,14 +294,14 @@ void ::RoutesOverBingMapsApp::MainPage::Connect(int __connectionId, ::Platform::
         break;
     case 6:
         {
-            this->waitingRing = safe_cast<::Windows::UI::Xaml::Controls::ProgressRing^>(__target);
+            this->listOfWaypoints = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::ListView^>(this->listOfWaypoints))->SelectionChanged += ref new ::Windows::UI::Xaml::Controls::SelectionChangedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::Controls::SelectionChangedEventArgs^))&MainPage::OnSelectWaypoint);
         }
         break;
     case 7:
         {
-            this->listOfWaypoints = safe_cast<::Windows::UI::Xaml::Controls::ListView^>(__target);
-            (safe_cast<::Windows::UI::Xaml::Controls::ListView^>(this->listOfWaypoints))->SelectionChanged += ref new ::Windows::UI::Xaml::Controls::SelectionChangedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
-                (::Platform::Object^, ::Windows::UI::Xaml::Controls::SelectionChangedEventArgs^))&MainPage::OnSelectWaypoint);
+            this->waitingRing = safe_cast<::Windows::UI::Xaml::Controls::ProgressRing^>(__target);
         }
         break;
     case 8:
@@ -368,6 +368,13 @@ void ::RoutesOverBingMapsApp::MainPage::Connect(int __connectionId, ::Platform::
             this->useTomtomButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
             (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useTomtomButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
                 (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseTomtomButton);
+        }
+        break;
+    case 24:
+        {
+            this->useAllServicesButton = safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(__target);
+            (safe_cast<::Windows::UI::Xaml::Controls::AppBarToggleButton^>(this->useAllServicesButton))->Checked += ref new ::Windows::UI::Xaml::RoutedEventHandler(this, (void (::RoutesOverBingMapsApp::MainPage::*)
+                (::Platform::Object^, ::Windows::UI::Xaml::RoutedEventArgs^))&MainPage::OnCheckUseAllServicesButton);
         }
         break;
     }

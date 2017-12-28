@@ -78,6 +78,7 @@
   <ItemGroup>
     <None Include="RoutesOverBingMapsApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="e86f8c22-76fd-4fd5-adac-350037f733e3.3fd.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainPage.xaml" />

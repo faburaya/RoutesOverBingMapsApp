@@ -36,6 +36,8 @@ namespace RoutesOverBingMapsApp
 
         void OnCheckUseTomtomButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
+        void OnCheckUseAllServicesButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
+
         void OnSelectWaypoint(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);
 
         void OnClickAddWaypointButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs);

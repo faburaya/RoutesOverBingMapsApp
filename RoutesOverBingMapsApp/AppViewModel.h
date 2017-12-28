@@ -134,6 +134,7 @@ namespace RoutesOverBingMapsApp
         Microsoft
         ,GoogleMaps
         ,Tomtom
+        ,All
     };
 
 

@@ -70,8 +70,10 @@ namespace RoutesOverBingMapsApp
             double loLongitude, hiLongitude;
         } bounds;
 
-        bounds.loLatitude = bounds.loLongitude = +180.0;
-        bounds.hiLatitude = bounds.hiLongitude = -180.0;
+        bounds.loLatitude = +90.0;
+        bounds.hiLatitude = -90.0;
+        bounds.loLongitude = +180.0;
+        bounds.hiLongitude = -180.0;
 
         /* Because all the views are of routes for the same start and end location,
            they are expected to be quite close to one each other. Also, the analysis

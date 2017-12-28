@@ -115,7 +115,7 @@ namespace RoutesOverBingMapsApp
         /* additionally, check whether the lowest and the highest
         latitudes look closer on the other side of the earth: */
 
-        interval = (*latitudes.begin() + 180.0) + (180.0 - *latitudes.rbegin());
+        interval = (*latitudes.begin() + 90.0) + (90.0 - *latitudes.rbegin());
 
         if (interval > largestInterval)
         {

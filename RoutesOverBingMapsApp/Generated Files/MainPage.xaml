@@ -58,8 +58,6 @@
                     VerticalAlignment="Center"/>
 
         <Canvas>
-            <ProgressRing x:ConnectionId='6' Name="waitingRing" Visibility="Collapsed"/>
-
             <Grid Canvas.Left="16" Canvas.Top="16">
                 <StackPanel Orientation="Vertical">
                     <CommandBar DefaultLabelPosition="Collapsed" Opacity="0.80">
@@ -67,24 +65,33 @@
                             <TextBlock x:ConnectionId='20' Name="serviceTextBlock"
                                        Margin="{StaticResource TextBlockLeftInCmdBarMargin}"/>
                         </CommandBar.Content>
-                        <AppBarToggleButton x:ConnectionId='21' Name="useMicrosoftButton"                                    >
+                        <AppBarToggleButton x:ConnectionId='21' Name="useMicrosoftButton"
+                                                                               >
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/microsoft_icon.png"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton x:ConnectionId='22' Name="useGoogleButton"                                 >
+                        <AppBarToggleButton x:ConnectionId='22' Name="useGoogleButton"
+                                                                            >
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/google_maps_icon.png"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
-                        <AppBarToggleButton x:ConnectionId='23' Name="useTomtomButton"                                 >
+                        <AppBarToggleButton x:ConnectionId='23' Name="useTomtomButton"
+                                                                            >
                             <AppBarToggleButton.Content>
                                 <Image Source="ms-appx:///Assets/tomtom_icon.png"/>
                             </AppBarToggleButton.Content>
                         </AppBarToggleButton>
+                        <AppBarToggleButton x:ConnectionId='24' Name="useAllServicesButton"
+                                                                                 >
+                            <AppBarToggleButton.Content>
+                                <TextBlock Text="All" HorizontalAlignment="Center"/>
+                            </AppBarToggleButton.Content>
+                        </AppBarToggleButton>
                     </CommandBar>
                     
-                    <ListView x:ConnectionId='7' Name="listOfWaypoints"
+                    <ListView x:ConnectionId='6' Name="listOfWaypoints"
                                                                         
                                                                  >
                         <ListView.ItemContainerTransitions>
@@ -98,6 +105,11 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+
+                    <ProgressRing x:ConnectionId='7' Name="waitingRing"
+                                  Visibility="Collapsed"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center"/>
 
                     <ListView x:ConnectionId='8' Name="listOfRoutes"
                                                                      
@@ -124,7 +136,7 @@
                     </ListView>
 
                     <CommandBar DefaultLabelPosition="Right" Opacity="0.80">
-
+                        
                         <AppBarButton x:ConnectionId='9' Name="clearRoutesButton"
                                       Icon="Clear"
                                                                       
