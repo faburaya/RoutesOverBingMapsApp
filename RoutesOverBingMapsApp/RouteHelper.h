@@ -122,7 +122,6 @@ namespace RoutesOverBingMapsApp
 
         std::vector<std::unique_ptr<IRouteLegFWApi>> m_legs;
 
-        GeoboundingBox ^m_boundingBox;
         Platform::String ^m_mainInfo;
         Platform::String ^m_moreInfo;
 
@@ -131,8 +130,6 @@ namespace RoutesOverBingMapsApp
         virtual IRouteFromWebAPI::~IRouteFromWebAPI() {}
 
         virtual void ParseFromJSON(web::json::value &jsonRouteObj) = 0;
-
-        GeoboundingBox ^GetBounds() const { return m_boundingBox; }
 
         Platform::String ^GetMainInfo() const { return m_mainInfo; }
 

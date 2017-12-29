@@ -271,6 +271,7 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
             {
                 auto routeInfo = ref new RouteInfo(route, *colorPicker);
                 auto routeView = ref new MapRouteView(route);
+
                 routeView->RouteColor = routeInfo->LineColor;
                 mapControl->Routes->Append(routeView);
                 ViewModel->Routes->Append(routeInfo);
@@ -306,6 +307,8 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
                 std::vector<BasicGeoposition> path;
                 route->GeneratePath(path);
 
+                bounds.push_back(CalculateViewBoundaries(path));
+
                 auto routeInfo = ref new RouteInfo(RouteService::GoogleMaps,
                                                    route->GetMainInfo(),
                                                    route->GetMoreInfo(),
@@ -313,7 +316,6 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
 
                 TheMap::GetInstance().DisplayRouteAsPolyline(std::move(path), routeInfo->LineColor);
 
-                bounds.push_back(route->GetBounds());
                 ViewModel->Routes->Append(routeInfo);
             }
 

@@ -408,21 +408,6 @@ namespace RoutesOverBingMapsApp
 
             try
             {
-                auto southwest = jsonRouteObj.at(L"bounds").at(L"southwest");
-                auto northeast = jsonRouteObj.at(L"bounds").at(L"northeast");
-
-                BasicGeoposition northwest;
-                northwest.Altitude = 0.0;
-                northwest.Latitude = northeast.at(L"lat").as_double();
-                northwest.Longitude = southwest.at(L"lng").as_double();
-
-                BasicGeoposition southeast;
-                southeast.Altitude = 0.0;
-                southeast.Latitude = southwest.at(L"lat").as_double();
-                southeast.Longitude = northeast.at(L"lng").as_double();
-
-                m_boundingBox = ref new GeoboundingBox(northwest, southeast);
-
                 uint32_t totalDurationSecs(0);
                 uint32_t totalDistanceMeters(0);
 

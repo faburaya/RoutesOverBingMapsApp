@@ -64,6 +64,12 @@ namespace RoutesOverBingMapsApp
     /// Calculates the boundaries of a view that covers all the
     /// geographic positions provided in the given list.
     /// </summary>
+    /// <remarks>
+    /// This is a more reliable approach for getting the actual boundaries of a route. For
+    /// example, Google Maps Directions API in its JSON response provides bondaries that do
+    /// not take into account "detour's" of the route, so we cannot use such a result because
+    /// then we would end up with a view box that does not enclose the route in its entirety.
+    /// </remarks>
     /// <param name="getPositions">
     /// A list of <see cref="Windows::Devices::Geolocation::BasicGeoposition"/> objects
     /// for the POI's in the map.
