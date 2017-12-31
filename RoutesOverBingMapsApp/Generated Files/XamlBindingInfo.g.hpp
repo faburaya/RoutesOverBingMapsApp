@@ -331,14 +331,6 @@ namespace XamlBindingInfo
             }
             obj->Text = value;
         }
-        static void Set_Windows_UI_Xaml_Shapes_Shape_Fill(::Windows::UI::Xaml::Shapes::Shape^ obj, ::Windows::UI::Xaml::Media::Brush^ value, ::Platform::String^ targetNullValue)
-        {
-            if (value == nullptr && targetNullValue != nullptr)
-            {
-                value = (::Windows::UI::Xaml::Media::Brush^) ::Windows::UI::Xaml::Markup::XamlBindingHelper::ConvertValue(::Windows::UI::Xaml::Media::Brush::typeid, targetNullValue);
-            }
-            obj->Fill = value;
-        }
         static void Set_Windows_UI_Xaml_Controls_Primitives_Selector_SelectedValue(::Windows::UI::Xaml::Controls::Primitives::Selector^ obj, ::Platform::Object^ value, ::Platform::String^ targetNullValue)
         {
             if (value == nullptr && targetNullValue != nullptr)

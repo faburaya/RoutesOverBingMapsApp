@@ -46,8 +46,7 @@
 
         <maps:MapControl Name="mapControl"
                          ZoomInteractionMode="GestureAndControl"
-                         TiltInteractionMode="GestureAndControl"
-                         TransitFeaturesVisible="True"/>
+                         TiltInteractionMode="GestureAndControl"/>
 
         <SymbolIcon Name="crosshairSymbol"
                     Symbol="Add"

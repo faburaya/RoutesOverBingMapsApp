@@ -42,9 +42,8 @@ Waypoint::Waypoint(int index, Geopoint ^geoCodeQueryHint)
 /// <summary>
 /// Enumerates all the possibilities for route color.
 /// </summary>
-std::array<Windows::UI::Color, 13> RouteColorPicker::routeColorOptions =
+std::array<Windows::UI::Color, 12> RouteColorPicker::routeColorOptions =
 {
-    Windows::UI::Colors::Beige,
     Windows::UI::Colors::Blue,
     Windows::UI::Colors::BlueViolet,
     Windows::UI::Colors::Brown,

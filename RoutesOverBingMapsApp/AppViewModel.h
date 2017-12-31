@@ -145,7 +145,7 @@ namespace RoutesOverBingMapsApp
     {
     private:
 
-        static std::array<Windows::UI::Color, 13> routeColorOptions;
+        static std::array<Windows::UI::Color, 12> routeColorOptions;
 
         std::list<Windows::UI::Color> m_remainingOptions;
 
