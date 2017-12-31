@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Common">
-      <UniqueIdentifier>5c082702-9f07-4a3b-b171-25d622787ed4</UniqueIdentifier>
-    </Filter>
     <Filter Include="Assets">
       <UniqueIdentifier>868057e0-6d2c-4adb-9d38-5d514abae25c</UniqueIdentifier>
       <Extensions>bmp;fbx;gif;jpg;jpeg;tga;tiff;tif;png</Extensions>
+    </Filter>
+    <Filter Include="CXX">
+      <UniqueIdentifier>5c082702-9f07-4a3b-b171-25d622787ed4</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,13 +18,23 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="MyWaypointControl.xaml.cpp" />
     <ClCompile Include="TheMap.cpp">
-      <Filter>Common</Filter>
+      <Filter>CXX</Filter>
     </ClCompile>
-    <ClCompile Include="RouteHelper.cpp" />
     <ClCompile Include="Utils.cpp">
-      <Filter>Common</Filter>
+      <Filter>CXX</Filter>
     </ClCompile>
-    <ClCompile Include="AppViewModel.cpp" />
+    <ClCompile Include="AppViewModel.cpp">
+      <Filter>CXX</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteHelperGoogle.cpp">
+      <Filter>CXX</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteHelperMicrosoft.cpp">
+      <Filter>CXX</Filter>
+    </ClCompile>
+    <ClCompile Include="RouteHelperTomTom.cpp">
+      <Filter>CXX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -32,13 +42,18 @@
     <ClInclude Include="MainPage.xaml.h" />
     <ClInclude Include="MyWaypointControl.xaml.h" />
     <ClInclude Include="TheMap.h">
-      <Filter>Common</Filter>
+      <Filter>CXX</Filter>
     </ClInclude>
-    <ClInclude Include="RouteHelper.h" />
     <ClInclude Include="Utils.h">
-      <Filter>Common</Filter>
+      <Filter>CXX</Filter>
     </ClInclude>
-    <ClInclude Include="AppViewModel.h" />
+    <ClInclude Include="AppViewModel.h">
+      <Filter>CXX</Filter>
+    </ClInclude>
+    <ClInclude Include="RouteHelper.h">
+      <Filter>CXX</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\LockScreenLogo.scale-200.png">
@@ -78,10 +93,12 @@
   <ItemGroup>
     <None Include="RoutesOverBingMapsApp_TemporaryKey.pfx" />
     <None Include="packages.config" />
-    <None Include="e86f8c22-76fd-4fd5-adac-350037f733e3.3fd.config" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="MainPage.xaml" />
     <Page Include="MyWaypointControl.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="e86f8c22-76fd-4fd5-adac-350037f733e3.3fd.config" />
   </ItemGroup>
 </Project>

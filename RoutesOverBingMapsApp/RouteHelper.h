@@ -63,26 +63,7 @@ namespace RoutesOverBingMapsApp
     /// </summary>
     class INTFOPT IRouteLegFWApi
     {
-    protected:
-
-        std::vector<std::unique_ptr<IRouteLegManeuverFWApi>> m_manuevers;
-
-        BasicGeoposition m_startPosition;
-        BasicGeoposition m_endPosition;
-        uint32_t m_durationSecs;
-        uint32_t m_distanceMeters;
-
     public:
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="IRouteLegFWApi"/> class.
-        /// </summary>
-        IRouteLegFWApi()
-            : m_startPosition{ 0.0, 0.0, 0.0 }
-            , m_endPosition{ 0.0, 0.0, 0.0 }
-            , m_durationSecs(0)
-            , m_distanceMeters(0)
-        {}
 
         /// <summary>
         /// Finalizes an instance of the <see cref="IRouteLegFWApi"/> class.
@@ -91,24 +72,7 @@ namespace RoutesOverBingMapsApp
 
         virtual void ParseFromJSON(web::json::value &jsonLegObj) = 0;
 
-        uint32_t GetDurationSecs() const { return m_durationSecs; }
-
-        uint32_t GetDistanceMeters() const { return m_distanceMeters; }
-
-        /// <summary>
-        /// Appends the geographic positions that compose this route leg to the route path.
-        /// </summary>
-        /// <param name="geoPath">The vector to receive the geographic
-        /// positions for composal of the route path.</param>
-        void AppendToPath(std::vector<BasicGeoposition> &geoPath)
-        {
-            geoPath.push_back(m_startPosition);
-
-            for (auto &manuever : m_manuevers)
-                manuever->AppendToPath(geoPath);
-
-            geoPath.push_back(m_endPosition);
-        }
+        virtual void AppendToPath(std::vector<BasicGeoposition> &geoPath) const = 0;
     };
 
 
@@ -155,6 +119,10 @@ namespace RoutesOverBingMapsApp
                                                             uint8 restrictions);
 
     task<RoutesFromWebApi> GetRoutesFromGoogleAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
+                                                    TimeRequirement *requiredTime,
+                                                    uint8 restrictions);
+
+    task<RoutesFromWebApi> GetRoutesFromTomTomAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
                                                     TimeRequirement *requiredTime,
                                                     uint8 restrictions);
 

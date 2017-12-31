@@ -1,9 +1,10 @@
 #pragma once
 
+#include <string>
 #include <vector>
 #include <iterator>
 #include <functional>
-#include <string>
+#include <algorithm>
 
 #undef min
 #undef max

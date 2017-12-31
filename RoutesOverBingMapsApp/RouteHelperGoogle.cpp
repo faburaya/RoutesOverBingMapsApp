@@ -3,9 +3,11 @@
 #include "Utils.h"
 #include <3FD\exceptions.h>
 #include <3FD\callstacktracer.h>
+#include <3FD\configuration.h>
 #include <3FD\utils_io.h>
 #include <array>
 #include <cstdio>
+#include <ctime>
 #include <string>
 #include <sstream>
 #include <codecvt>
@@ -19,130 +21,6 @@ namespace RoutesOverBingMapsApp
 {
     using namespace _3fd;
     using namespace Windows::Services;
-
-
-    /////////////////////////////////////
-    // Microsoft WinRT API for Maps
-    /////////////////////////////////////
-
-
-    /// <summary>
-    /// Converts route restrictions flags to the type expected by <see cref="Windows::Services::Maps"/>.
-    /// </summary>
-    /// <param name="restrictions">The route restrictions.</param>
-    /// <returns>Value converted to <see cref="Windows::Services::Maps::MapRouteRestrictions"/>.</returns>
-    static MapRouteRestrictions ConvertToMicrosoftType(uint8 restrictions)
-    {
-        auto result = static_cast<uint32> (MapRouteRestrictions::None);
-
-        if (static_cast<uint8> (RouteRestriction::AvoidFerries) & restrictions)
-            result |= static_cast<uint32> (MapRouteRestrictions::Ferries);
-
-        if (static_cast<uint8> (RouteRestriction::AvoidDirt) & restrictions)
-            result |= static_cast<uint32> (MapRouteRestrictions::DirtRoads);
-
-        if (static_cast<uint8> (RouteRestriction::AvoidTolls) & restrictions)
-            result |= static_cast<uint32> (MapRouteRestrictions::TollRoads);
-
-        if (static_cast<uint8> (RouteRestriction::AvoidHighways) & restrictions)
-            result |= static_cast<uint32> (MapRouteRestrictions::Highways);
-
-        return static_cast<MapRouteRestrictions> (result);
-    }
-
-
-    /// <summary>
-    /// Produces a description for a value <see cref="Windows::Services::MapRouteFinderStatus"/>.
-    /// </summary>
-    /// <param name="status">The status code returned by <see cref="Windows::Services::Maps::MapRouteFinder"/>.</param>
-    /// <returns>A description for the status code.</returns>
-    static const char *ToString(MapRouteFinderStatus status)
-    {
-        switch (status)
-        {
-        case MapRouteFinderStatus::Success:
-            return "The query was successful.";
-
-        case MapRouteFinderStatus::UnknownError:
-            return "The query returned an unknown error.";
-
-        case MapRouteFinderStatus::InvalidCredentials:
-            return "The query provided credentials that are not valid.";
-
-        case MapRouteFinderStatus::NoRouteFound:
-            return "The query did not find a route.";
-
-        case MapRouteFinderStatus::NoRouteFoundWithGivenOptions:
-            return "The query did not find a route with the specified options.";
-
-        case MapRouteFinderStatus::StartPointNotFound:
-            return "The specified starting point is not valid in a route. For example, the point is in an ocean or a desert.";
-
-        case MapRouteFinderStatus::EndPointNotFound:
-            return "The specified ending point is not valid in a route. For example, the point is in an ocean or a desert.";
-
-        case MapRouteFinderStatus::NoPedestrianRouteFound:
-            return "The query did not find a pedestrian route.";
-
-        case MapRouteFinderStatus::NetworkFailure:
-            return "The query encountered a network failure.";
-
-        case MapRouteFinderStatus::NotSupported:
-            return "The query is not supported.";
-
-        default:
-            return "UNKNOWN STATUS";
-        }
-    }
-
-
-    /// <summary>
-    /// Get the best result for the provided waypoints using the
-    /// given transportation and requesting to Bing Maps service.
-    /// </summary>
-    /// <param name="waypoints">The required waypoints.</param>
-    /// <param name="optimization">What to optimize the result for.</param>
-    /// <param name="restrictions">The restrictions to apply in the result.</param>
-    /// <returns>The result returned from <see cref="Windows::Services::Maps::MapRouteFinder"/>.</returns>
-    task<IVector<MapRoute ^> ^> GetRoutesFromMicrosoftAsync(Collections::IVectorView<Waypoint ^> ^waypoints,
-                                                            MapRouteOptimization optimization,
-                                                            uint8 restrictions)
-    {
-        auto geopoints = ref new Platform::Collections::Vector<Geopoint ^>();
-
-        for (auto &&waypt : waypoints)
-        {
-            geopoints->Append(
-                ref new Geopoint(waypt->GetLocation().coordinates)
-            );
-        }
-
-        return create_task(
-            MapRouteFinder::GetDrivingRouteFromWaypointsAsync(geopoints, optimization, ConvertToMicrosoftType(restrictions))
-        )
-        .then([](MapRouteFinderResult ^result)
-        {
-            CALL_STACK_TRACE;
-
-            // failed? notify user and return nothing
-            if (result->Status != MapRouteFinderStatus::Success)
-            {
-                std::ostringstream oss;
-                oss << "Failed to find route using WinRT Maps Services: " << ToString(result->Status);
-                throw core::AppException<std::runtime_error>(oss.str());
-            }
-
-            auto routes = ref new Platform::Collections::Vector<MapRoute ^>();
-
-            routes->Append(result->Route);
-
-            for (auto &&entry : result->AlternateRoutes)
-                routes->Append(entry);
-
-            return static_cast<IVector<MapRoute ^> ^> (routes);
-
-        }, task_continuation_context::use_arbitrary());
-    }
 
 
     //////////////////////////////////
@@ -265,6 +143,8 @@ namespace RoutesOverBingMapsApp
 
     public:
 
+        virtual ~RouteLegManeuverFromGoogleApi() {}
+
         /// <summary>
         /// Parses JSON for a maneuver in a route returned by Google Maps Directions API.
         /// </summary>
@@ -318,7 +198,32 @@ namespace RoutesOverBingMapsApp
     /// </summary>
     class RouteLegFromGoogleApi : public IRouteLegFWApi
     {
+    private:
+
+        std::vector<std::unique_ptr<IRouteLegManeuverFWApi>> m_manuevers;
+
+        BasicGeoposition m_startPosition;
+        BasicGeoposition m_endPosition;
+        uint32_t m_durationSecs;
+        uint32_t m_distanceMeters;
+
     public:
+
+        uint32_t GetDurationSecs() const { return m_durationSecs; }
+
+        uint32_t GetDistanceMeters() const { return m_distanceMeters; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RouteLegFromGoogleApi"/> class.
+        /// </summary>
+        RouteLegFromGoogleApi()
+            : m_startPosition{ 0.0, 0.0, 0.0 }
+            , m_endPosition{ 0.0, 0.0, 0.0 }
+            , m_durationSecs(0)
+            , m_distanceMeters(0)
+        {}
+
+        virtual ~RouteLegFromGoogleApi() {}
 
         /// <summary>
         /// Parses JSON for a leg in a route returned by Google Maps Directions API.
@@ -385,6 +290,21 @@ namespace RoutesOverBingMapsApp
                 throw core::AppException<std::runtime_error>(oss.str());
             }
         }
+
+        /// <summary>
+        /// Appends the geographic positions that compose this route leg to the route path.
+        /// </summary>
+        /// <param name="geoPath">The vector to receive the geographic
+        /// positions for composal of the route path.</param>
+        virtual void AppendToPath(std::vector<BasicGeoposition> &geoPath) const override
+        {
+            geoPath.push_back(m_startPosition);
+
+            for (auto &manuever : m_manuevers)
+                manuever->AppendToPath(geoPath);
+
+            geoPath.push_back(m_endPosition);
+        }
     };
 
 
@@ -394,9 +314,9 @@ namespace RoutesOverBingMapsApp
     /// </summary>
     class RouteFromGoogleApi : public IRouteFromWebAPI
     {
-    private:
-
     public:
+
+        virtual ~RouteFromGoogleApi() {}
 
         /// <summary>
         /// Parses JSON for a route returned by Google Maps Directions API.
@@ -417,7 +337,7 @@ namespace RoutesOverBingMapsApp
 
                 for (auto &entry : legs)
                 {
-                    std::unique_ptr<IRouteLegFWApi> leg(new RouteLegFromGoogleApi());
+                    std::unique_ptr<RouteLegFromGoogleApi> leg(new RouteLegFromGoogleApi());
                     leg->ParseFromJSON(entry);
 
                     totalDistanceMeters += leg->GetDistanceMeters();
@@ -548,8 +468,7 @@ namespace RoutesOverBingMapsApp
 
 
     /// <summary>
-    /// Get the best result for the provided waypoints using the
-    /// given transportation and requesting to Google Maps API.
+    /// Get the best result for the provided waypoints and requesting to Google Maps API.
     /// </summary>
     /// <param name="waypoints">The required waypoints.</param>
     /// <param name="requiredTime">When not null, is the required departure OR arrival time.</param>
@@ -617,7 +536,10 @@ namespace RoutesOverBingMapsApp
             uri->append_query(L"mode",         L"driving");
             uri->append_query(L"alternatives", L"true");
             uri->append_query(L"units",        L"metric");
-            uri->append_query(L"key",          L"AIzaSyC-92iQJwDNoEuq5H3lDGhTzEMKOVlzR3s");
+
+            std::string key = core::AppConfig::GetSettings().application.GetString("googleApiKey", "NOT SET");
+
+            uri->append_query(L"key", utility::conversions::to_utf16string(key));
         }
         catch (std::exception &ex)
         {
@@ -649,8 +571,8 @@ namespace RoutesOverBingMapsApp
         {
             CALL_STACK_TRACE;
 
-            ///////////////////////////////////////////////
-            // Transform JSON into a list of MapRoute's:
+            /////////////////////////////////////
+            // Parse Google API JSON response
 
             try
             {

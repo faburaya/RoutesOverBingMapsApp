@@ -42,21 +42,20 @@ Waypoint::Waypoint(int index, Geopoint ^geoCodeQueryHint)
 /// <summary>
 /// Enumerates all the possibilities for route color.
 /// </summary>
-std::array<Windows::UI::Color, 14> RouteColorPicker::routeColorOptions =
+std::array<Windows::UI::Color, 13> RouteColorPicker::routeColorOptions =
 {
     Windows::UI::Colors::Beige,
     Windows::UI::Colors::Blue,
+    Windows::UI::Colors::BlueViolet,
     Windows::UI::Colors::Brown,
+    Windows::UI::Colors::Cyan,
     Windows::UI::Colors::Gold,
     Windows::UI::Colors::DarkGray,
     Windows::UI::Colors::Green,
-    Windows::UI::Colors::Magenta,
     Windows::UI::Colors::Orange,
     Windows::UI::Colors::Purple,
     Windows::UI::Colors::Red,
     Windows::UI::Colors::SeaGreen,
-    Windows::UI::Colors::Violet,
-    Windows::UI::Colors::White,
     Windows::UI::Colors::YellowGreen
 };
 
@@ -102,7 +101,7 @@ Windows::UI::Color RouteColorPicker::GetDistinctColor()
 RouteInfo::RouteInfo(MapRoute ^route, RouteColorPicker &colorPicker)
 {
     m_bgBrush = ref new Media::SolidColorBrush(colorPicker.GetDistinctColor());
-    m_bgBrush->Opacity = 0.80;
+    m_bgBrush->Opacity = 0.75;
 
     std::wostringstream woss;
 
@@ -154,7 +153,7 @@ RouteInfo::RouteInfo(RouteService service,
     , m_moreInfo(moreInfo)
 {
     m_bgBrush = ref new Media::SolidColorBrush(colorPicker.GetDistinctColor());
-    m_bgBrush->Opacity = 0.80;
+    m_bgBrush->Opacity = 0.75;
 }
 
 

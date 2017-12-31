@@ -80,7 +80,7 @@ void MainPage::OnCheckUseGoogleButton(Platform::Object ^sender, Windows::UI::Xam
 void MainPage::OnCheckUseTomtomButton(Platform::Object ^sender, Windows::UI::Xaml::RoutedEventArgs ^evArgs)
 {
     ViewModel->Service = RouteService::Tomtom;
-    serviceTextBlock->Text = Platform::StringReference(L"Tomtom");
+    serviceTextBlock->Text = Platform::StringReference(L"TomTom");
     useMicrosoftButton->IsChecked = false;
     useGoogleButton->IsChecked = false;
     useAllServicesButton->IsChecked = false;
@@ -331,7 +331,38 @@ void MainPage::OnClickFindRouteButton(Platform::Object ^sender, Windows::UI::Xam
 
     if (ViewModel->Service == RouteService::Tomtom || ViewModel->Service == RouteService::All)
     {
+        auto thisTask = GetRoutesFromTomTomAsync(
+            ViewModel->Waypoints->GetView(),
+            nullptr,
+            static_cast<uint8> (RouteRestriction::AvoidDirt | RouteRestriction::AvoidFerries)
+        )
+        .then([this, colorPicker](RoutesFromWebApi results)
+        {
+            std::vector<GeoboundingBox ^> bounds;
+            bounds.reserve(results->size());
 
+            for (auto &route : *results)
+            {
+                std::vector<BasicGeoposition> path;
+                route->GeneratePath(path);
+
+                bounds.push_back(CalculateViewBoundaries(path));
+
+                auto routeInfo = ref new RouteInfo(RouteService::Tomtom,
+                                                   route->GetMainInfo(),
+                                                   route->GetMoreInfo(),
+                                                   *colorPicker);
+
+                TheMap::GetInstance().DisplayRouteAsPolyline(std::move(path), routeInfo->LineColor);
+
+                ViewModel->Routes->Append(routeInfo);
+            }
+
+            return MergeViewsBoundaries(bounds.begin(), bounds.end());
+
+        }, task_continuation_context::use_current());
+
+        tasks.push_back(thisTask);
     }
 
     // wait for all services to respond:

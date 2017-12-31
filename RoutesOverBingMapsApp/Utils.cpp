@@ -3,6 +3,7 @@
 #include <set>
 #include <sstream>
 #include <iomanip>
+#include <cinttypes>
 
 
 namespace RoutesOverBingMapsApp
@@ -175,8 +176,8 @@ namespace RoutesOverBingMapsApp
 
         // finally, add some extra to the boundaries, so the content does not touch the border:
 
-        double latDistFromBorder = std::max(0.05 * (bounds.north - bounds.south), 0.01);
-        double lngDistFromBorder = std::max(0.05 * (bounds.east - bounds.west), 0.01);
+        double latDistFromBorder = std::max(0.03 * (bounds.north - bounds.south), 0.01);
+        double lngDistFromBorder = std::max(0.03 * (bounds.east - bounds.west), 0.01);
 
         northwestCorner.Latitude += latDistFromBorder;
         northwestCorner.Longitude -= lngDistFromBorder;
